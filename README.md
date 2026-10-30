@@ -1,4 +1,4 @@
-[index (60).html](https://github.com/user-attachments/files/34200638/index.60.html)<!doctype html>
+<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -107,11 +107,12 @@
   <div>Ruumi kood: <span class="code" id="hudCode">----</span></div>
   <div id="hudNet">Ootan juhendajat…</div>
   <hr style="border-color:#444">
-  <b>Quest:</b> vajuta all <b>ENTER VR</b>. Päästik = vajuta/lõika. Haare = võta pomm kätte ja keera.<br>
-  <b>Arvutis:</b> vasak klõps = vajuta/lõika (hoia nuppu all, kui vaja). Parem nupp + lohista = keera pommi. F = pööra ümber (ekspert: moodulid ka taga!). Tühik = tagasi. Ratas = suumi.
+  <b>Quest:</b> vajuta all <b>ENTER VR</b>. Päästik = vajuta. Haare = võta tööriist laualt (tangid, kruvikeeraja, taskulamp) või pomm kätte. Haare uuesti = pane tööriist tagasi.<br>
+  <b>Arvutis:</b> vasak klõps = vajuta (hoia nuppu all, kui vaja). Klahvid <b>1–4</b> või klõps laual = vali tööriist. Juhtmeid lõikad ainult <b>tangidega</b>, kaane kruvid keerad <b>kruvikeerajaga</b>. Parem nupp + lohista = keera pommi. F = pööra ümber (ekspert: moodulid ka taga!). Tühik = tagasi. Ratas = suumi.
   <br><button class="btn" style="font-size:13px;padding:4px 10px;margin-top:6px" onclick="this.parentNode.classList.add('hide')">Peida</button>
 </div>
 
+<div id="toolHud" class="hide" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(20,22,26,.9);border:2px solid #f2c230;border-radius:12px;padding:8px 14px;font-size:15px;z-index:6;color:#fff;white-space:nowrap">Käes: ✋ käsi · <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp</div>
 <div id="manual" class="hide">
   <div id="mbar"><span class="t" id="mTime">-:--</span><span class="s" id="mStrikes"></span><span class="st" id="mStat">Ühendan…</span><span id="modeSw"><button id="mKid">👶 Piltidega</button><button id="mFull">📖 Täisjuhend</button></span></div>
   <div id="kid"></div>
@@ -316,6 +317,9 @@ function bookPages(R) {
     <li><b>Indikaator</b> – pommi paremal küljel: kolmetäheline silt (nt MAA) ja lamp, mis põleb või ei põle.</li></ul>
     <p>Täishäälikud on A, E, I, O, U. Iga moodul on valmis, kui selle nurgas süttib <b>roheline tuli</b>. Igal veal on oma ✕. Kui vigu tuleb liiga palju, pomm plahvatab. Ekspert-pommil võivad moodulid olla ka <b>tagaküljel</b>.</p>
     ${fluff('Märkus: patareid on tüüpi AA ja neid ei tohi asendada kartulitega, kuigi kartulist on ka voolu saadud.')}`);
+  P('Tööriistad', `<h2>2a. Tööriistad</h2><p>Pommi kõrval laual on tööriistad. Pommimees võtab need kätte (Questis haardenupuga, arvutis klahvid 1–4).</p>
+    <table><tr><th>Tööriist</th><th>Milleks</th></tr><tr><td>✂️ Tangid</td><td>Juhtmete lõikamiseks (Juhtmed ja Juhtmejada). <b>Ilma tangideta juhet lõigata ei saa.</b></td></tr><tr><td>🪛 Kruvikeeraja</td><td>Mõnel moodulil on ees <b>kaas 4 kruviga</b>. Keera kõik 4 kruvi lahti, siis kaas kukub ära.</td></tr><tr><td>🔦 Taskulamp</td><td>Kui tuled kustuvad, on ilma selleta pime.</td></tr><tr><td>✋ Käsi</td><td>Nupud, lülitid, klahvid ja nooled.</td></tr></table>
+    ${fluff('Tööriistad on valmistatud kroom-vanaadiumterasest. Tange ei ole soovitatav kasutada pähklite purustamiseks (vt ka peatükk 1.2).')}`);
   P('Juhtmed', `<h2>3. Moodul: Juhtmed</h2>${spec([['Mudel', 'JM-6'], ['Juhtmete pikkus', '9 cm'], ['Isolatsioon', 'kuumakindel kuni 120 °C']])}
     <p>Moodulil on 3–6 värvilist juhet. Lõigata tuleb <b>täpselt üks</b> juhe. Juhtmeid loetakse <b>ülevalt alla</b>. Kasuta <b>esimest reeglit, mis sobib</b>.</p>
     <h3>3 juhet</h3><ol><li>Kui esimene juhe on ${w.c3}, lõika ${ORDN[w.d3]}.</li><li>Kui kaks juhet on sama värvi, lõika see juhe, mis on teist värvi.</li><li>Muidu lõika ${ORDN[w.def3]}.</li></ol>
@@ -444,7 +448,7 @@ function kidBody() {
     if (K.mod === 'juhtmed') {
       if (!K.n) return back + `<div class="steps">Samm 1 / 3</div><div class="kq">Mitu juhet on?</div><div class="kgrid">${[3, 4, 5, 6].map(n => `<div class="tile" data-a="wn" data-v="${n}" style="width:130px">${svgWires([], n).replace('style="width:min(100%,340px)"', 'style="width:110px"')}<div>${n}</div></div>`).join('')}</div>`;
       if (K.cols.length < K.n) return back + `<div class="steps">Samm 2 / 3</div><div class="kq">Mis värvi on ${ORD[K.cols.length]} juhe?</div><div class="ksub">Loe ülevalt alla.</div>${svgWires(K.cols, K.n)}<div class="kgrid" style="margin-top:12px">${swBtn(WCOL, 'wc')}</div><div style="margin-top:10px"><button class="kbtn sm" data-a="wundo">↩ Võta tagasi</button></div>`;
-      const i = wiresK(K.cols); return back + `<div class="steps">Samm 3 / 3 – VASTUS</div><div class="ans">✂️ Lõika ${ORD[i]} juhe</div><div class="kq" style="color:${WHEX[K.cols[i]] === '#f2f2f2' ? '#777' : WHEX[K.cols[i]]}">(${K.cols[i]})</div>${svgWires(K.cols, K.n, i)}` + doneBtns;
+      const i = wiresK(K.cols); return back + `<div class="steps">Samm 3 / 3 – VASTUS</div><div class="ans">✂️ Võta tangid ja lõika ${ORD[i]} juhe</div><div class="kq" style="color:${WHEX[K.cols[i]] === '#f2f2f2' ? '#777' : WHEX[K.cols[i]]}">(${K.cols[i]})</div>${svgWires(K.cols, K.n, i)}` + doneBtns;
     }
     if (K.mod === 'nupp') {
       if (!K.col) return back + `<div class="steps">Samm 1</div><div class="kq">Mis värvi on nupp?</div><div class="kgrid">${swBtn(BCOL, 'bc')}</div>`;
@@ -487,7 +491,7 @@ function liveCard(m, i, st) {
   const focus = st.focus === i;
   const wrap = (body, say) => `<div class="kcard" style="${focus ? 'outline:6px solid #f2c230;' : ''}">${focus ? '<div class="steps" style="font-size:20px;opacity:1">👀 Pommimees vaatab seda!</div>' : ''}${body}${say && etVoice ? `<div><button class="kbtn sm" data-a="say" data-v="${say}">🔊 Loe ette</button></div>` : ''}</div>`;
   if (m.solved) return `<div class="kcard" style="padding:8px;opacity:.7"><b style="font-size:22px">✅ ${MODNAME[m.id]} – tehtud!</b></div>`;
-  if (m.id === 'juhtmed') { const c = m.cols[m.ans]; return wrap(`<div class="kq">Ütle: ✂️ Lõika ${CW(c)} juhe!</div><div class="ksub">See on ${m.ans + 1}. juhe ülevalt.</div>${svgWires(m.cols, m.cols.length, m.ans)}`, `Lõika ${c} juhe. See on ${m.ans + 1}. juhe ülevalt.`); }
+  if (m.id === 'juhtmed') { const c = m.cols[m.ans]; return wrap(`<div class="kq">Ütle: võta TANGID ✂️ ja lõika ${CW(c)} juhe!</div><div class="ksub">See on ${m.ans + 1}. juhe ülevalt.</div>${svgWires(m.cols, m.cols.length, m.ans)}`, `Lõika ${c} juhe. See on ${m.ans + 1}. juhe ülevalt.`); }
   if (m.id === 'nupp') {
     if (m.act === 'tap') return wrap(`${svgButton(m.col, m.lab)}<div class="ans">👆 Ütle: "Vajuta üks kord kiiresti!"</div>`, 'Vajuta nuppu üks kord kiiresti.');
     if (!m.held) return wrap(`${svgButton(m.col, m.lab)}<div class="ans">✊ Ütle: "Vajuta ja HOIA all!"</div><div class="ksub">Ära lase lahti enne, kui ütlen!</div>`, 'Vajuta nuppu ja hoia all.');
@@ -526,7 +530,7 @@ function kidAct(a, v) {
 
 /* ============ POMMIMEES ============ */
 function startBomb(forced) {
-  $('start').classList.add('hide'); $('bombHud').classList.remove('hide');
+  $('start').classList.add('hide'); $('bombHud').classList.remove('hide'); $('toolHud').classList.remove('hide');
   let code = forced && /^\d{4}$/.test(forced) ? forced : String(1000 + rint(9000));
   let net, lastHi = -1e9, netStatus = '';
   const connect = () => { net && net.destroy(); $('hudCode').textContent = code; net = makeNet(code, 'bomb', m => { if (m && m.type === 'hi') { lastHi = performance.now(); sendState(); } }, s => { netStatus = s; if (s === 'err:unavailable-id') { code = String(1000 + rint(9000)); connect(); } menu && (menu.last = ''); }); };
@@ -542,9 +546,9 @@ function startBomb(forced) {
   const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.01, 50); camera.rotation.order = 'YXZ';
   addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
   const rig = new THREE.Group(); scene.add(rig); rig.add(camera);
-  scene.add(new THREE.HemisphereLight('#8090a8', '#20180f', 0.7));
+  scene.add(new THREE.HemisphereLight('#8090a8', '#20180f', 0.4));
   const spot = new THREE.SpotLight('#fff1d6', 40, 5, 0.6, 0.5, 1.5); spot.position.set(0.3, 2.3, -0.2); spot.target.position.set(0, 0.95, -0.45); spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -0.0005; scene.add(spot, spot.target);
-  const fill = new THREE.PointLight('#6080ff', 2, 4); fill.position.set(-1, 1.6, 0.5); scene.add(fill);
+  const fill = new THREE.PointLight('#6080ff', 1.2, 4); fill.position.set(-1, 1.6, 0.5); scene.add(fill);
   const alarm = new THREE.PointLight('#ff2010', 0, 6); alarm.position.set(0, 2.3, -1.6); scene.add(alarm);
 
   /* --- abi --- */
@@ -570,6 +574,11 @@ function startBomb(forced) {
     win: () => [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, f, 0.35, 'triangle', 0.14, i * 0.11)), key: () => tone(1500, 1500, 0.05, 'sine', 0.06),
     sw: () => { noise(0.03, 0.4, 3000, 'highpass'); tone(400, 300, 0.03, 'square', 0.04); },
   };
+  let drone = null;
+  function updDrone() { if (!AC) return; if (!drone) { const o = AC.createOscillator(), o2 = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain(); o.type = 'sawtooth'; o2.type = 'sine'; o.frequency.value = 42; o2.frequency.value = 43; f.type = 'lowpass'; f.frequency.value = 160; g.gain.value = 0; o.connect(f); o2.connect(f); f.connect(g).connect(master); o.start(); o2.start(); drone = { o, o2, f, g }; }
+    const k = clamp(1 - G.time / Math.max(60, DIFF[G.diff].time), 0, 1); drone.g.gain.setTargetAtTime(0.05 + 0.1 * k, AC.currentTime, 0.3); drone.o.frequency.setTargetAtTime(42 + 30 * k, AC.currentTime, 0.5); drone.o2.frequency.setTargetAtTime(43.5 + 30 * k, AC.currentTime, 0.5); drone.f.frequency.setTargetAtTime(160 + 300 * k, AC.currentTime, 0.5); }
+  function stopDrone() { if (drone && AC) drone.g.gain.setTargetAtTime(0, AC.currentTime, 0.2); }
+  function heart() { tone(60, 40, 0.15, 'sine', 0.5); tone(55, 38, 0.12, 'sine', 0.4, 0.2); }
   const haptic = (hand, v, ms) => { const s = renderer.xr.getSession(); if (!s) return; for (const src of s.inputSources) if (src.handedness === hand) src.gamepad?.hapticActuators?.[0]?.pulse?.(v, ms); };
 
   /* --- tuba --- */
@@ -673,7 +682,7 @@ function startBomb(forced) {
       for (const s of [-1, 1]) mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.006, 8).rotateX(PI / 2), screwM, s * 0.045, y, 0.009, b.g);
       m.cut.push({ w, curve, mat, done: false });
     });
-    m.down = i => { const W = m.cut[i]; if (W.done || m.solved) return; W.done = true; W.w.visible = false; sfx.snip();
+    m.down = (i, tool) => { const W = m.cut[i]; if (W.done || m.solved) return; if (tool !== 'tangid') { needTool('tangid'); return; } snapTool(); W.done = true; W.w.visible = false; sfx.snip();
       for (const [a, z] of [[0, 0.42], [0.58, 1]]) { const pts = []; for (let k = 0; k <= 8; k++) pts.push(W.curve.getPoint(a + (z - a) * k / 8)); const t = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.0032, 8), W.mat, 0, 0, 0, b.g); const end = a === 0 ? pts[pts.length - 1] : pts[0]; mesh(new THREE.SphereGeometry(0.0028, 8, 6), M('#d08a3a', { metalness: 0.9 }), end.x, end.y, end.z, b.g); }
       if (i === m.ans) solve(m); else strike(m); };
     return m;
@@ -816,8 +825,8 @@ function startBomb(forced) {
       (m.panels[m.pi] || []).forEach((w, k) => { const a = new THREE.Vector3(-0.042, 0.035 - w.f * 0.025, 0.008), c = new THREE.Vector3(0.042, 0.035 - w.to * 0.025, 0.008); const mid = a.clone().add(c).multiplyScalar(0.5); mid.z = 0.016; const curve = new THREE.QuadraticBezierCurve3(a, mid, c); const mat = M(WHEX[w.c], { roughness: 0.5, metalness: 0 });
         if (w.done) { for (const [s0, s1] of [[0, 0.4], [0.6, 1]]) { const pts = []; for (let q = 0; q <= 6; q++) pts.push(curve.getPoint(s0 + (s1 - s0) * q / 6)); mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 8, 0.003, 6), mat, 0, 0, 0, grp); } }
         else { mesh(new THREE.TubeGeometry(curve, 20, 0.003, 8), mat, 0, 0, 0, grp); const h = new THREE.Mesh(new THREE.TubeGeometry(curve, 10, 0.008, 6), new THREE.MeshBasicMaterial({ visible: false })); grp.add(h); hit(h, m, k); } }); pnum.redraw(); };
-    m.down = p => { if (m.solved) return; if (p === 'next') { sfx.click(); const left = m.panels[m.pi].filter(w => w.cut && !w.done); if (left.length) { left.forEach(w => w.cut = false); strike(m); } m.pi++; if (m.pi >= 3) { solve(m); m.pi = 2; } show(); return; }
-      const w = m.panels[m.pi][p]; if (!w || w.done) return; w.done = true; sfx.snip(); if (!w.cut) strike(m); show(); };
+    m.down = (p, tool) => { if (m.solved) return; if (p === 'next') { sfx.click(); const left = m.panels[m.pi].filter(w => w.cut && !w.done); if (left.length) { left.forEach(w => w.cut = false); strike(m); } m.pi++; if (m.pi >= 3) { solve(m); m.pi = 2; } show(); return; }
+      if (tool !== 'tangid') { needTool('tangid'); return; } snapTool(); const w = m.panels[m.pi][p]; if (!w || w.done) return; w.done = true; sfx.snip(); if (!w.cut) strike(m); show(); };
     show(); return m;
   }
   function modTimer() { const b = base(); b.led.visible = false;
@@ -838,8 +847,14 @@ function startBomb(forced) {
     for (const [w, h, x, y] of [[W + 0.004, 0.014, 0, H / 2 - 0.007], [W + 0.004, 0.014, 0, -H / 2 + 0.007], [0.014, H, W / 2 - 0.007, 0], [0.014, H, -W / 2 + 0.007, 0]]) { const L2 = Math.max(w, h); const tx = HAZ.clone(); tx.needsUpdate = true; tx.repeat.set(L2 / 0.03, 1); const s = mesh(new THREE.BoxGeometry(L2, 0.014, 0.004), new THREE.MeshStandardMaterial({ map: tx, roughness: 0.6 }), x, y, Dp / 2 + 0.001, bomb); if (h > w) s.rotation.z = PI / 2; }
     for (const s of [-1, 1]) { const hd = mesh(new THREE.TorusGeometry(0.035, 0.007, 8, 16, PI), M('#1a1a1a', { metalness: 0.5 }), s * (W / 2 + 0.002), 0, 0, bomb); hd.rotation.set(0, s * PI / 2, PI / 2); }
     // küljed
-    canvasPlane(0.11, 0.04, 330, 120, (g, Wd, Hd) => { g.fillStyle = '#f2c230'; rr(g, 4, 4, Wd - 8, Hd - 8, 14); g.fill(); txt(g, 'JUHEND', Wd / 2, 38, 32, '#111'); txt(g, 'v' + B.ed, Wd / 2, 84, 48, '#111'); }, bomb, -0.15, H / 2 + 0.001, 0, false).rotation.x = -PI / 2;
-    canvasPlane(0.2, 0.05, 600, 150, (g, Wd, Hd) => { g.fillStyle = '#f4f4f0'; rr(g, 4, 4, Wd - 8, Hd - 8, 16); g.fill(); txt(g, 'SN', 60, Hd / 2, 44, '#666'); txt(g, B.serial, Wd / 2 + 40, Hd / 2 + 2, 76, '#111', 'center', true, 'ui-monospace,monospace'); }, bomb, 0.05, H / 2 + 0.001, 0, false).rotation.x = -PI / 2;
+    canvasPlane(0.11, 0.04, 330, 120, (g, Wd, Hd) => { g.fillStyle = '#f2c230'; rr(g, 4, 4, Wd - 8, Hd - 8, 14); g.fill(); txt(g, 'JUHEND', Wd / 2, 38, 32, '#111'); txt(g, 'v' + B.ed, Wd / 2, 84, 48, '#111'); }, bomb, -0.15, H / 2 + 0.001, 0.04, false).rotation.x = -PI / 2;
+    { const dyn = M('#b81e14', { roughness: 0.75, metalness: 0 }), cap = M('#e8dcc0', { roughness: 1, metalness: 0 }), tape = M('#111', { roughness: 0.4, metalness: 0 });
+      for (const z of [-0.05, -0.012]) { mesh(new THREE.CylinderGeometry(0.019, 0.019, 0.38, 16).rotateZ(PI / 2), dyn, 0, H / 2 + 0.019, z, bomb); for (const s of [-1, 1]) mesh(new THREE.CylinderGeometry(0.0192, 0.0192, 0.012, 16).rotateZ(PI / 2), cap, s * 0.19, H / 2 + 0.019, z, bomb); }
+      for (const x of [-0.11, 0.11]) mesh(new THREE.BoxGeometry(0.014, 0.05, 0.1), tape, x, H / 2 + 0.02, -0.031, bomb);
+      const tx2 = canvasPlane(0.09, 0.03, 300, 100, (g, Wd, Hd) => txt(g, 'TNT', Wd / 2, Hd / 2 + 4, 80, '#f0e0c0'), bomb, 0, H / 2 + 0.039, -0.031, false); tx2.rotation.x = -PI / 2;
+      for (const [x, c] of [[-0.19, '#d23a2e'], [0.19, '#2f62d8'], [0.17, '#f0c820']]) { const a = new THREE.Vector3(x * 1.06, H / 2 + 0.02, -0.03), e = new THREE.Vector3(x * 1.1, H / 2 - 0.05, -Dp / 2 - 0.002), mid = a.clone().lerp(e, 0.5).add(new THREE.Vector3(x * 0.25, 0.04, -0.04)); mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a, mid, e), 16, 0.003, 6), M(c, { metalness: 0 }), 0, 0, 0, bomb); }
+      G.bombLed = mesh(new THREE.SphereGeometry(0.008, 12, 8), new THREE.MeshStandardMaterial({ color: '#ff2010', emissive: '#ff1000', emissiveIntensity: 0 }), 0.2, H / 2 + 0.004, 0.045, bomb); }
+    canvasPlane(0.2, 0.05, 600, 150, (g, Wd, Hd) => { g.fillStyle = '#f4f4f0'; rr(g, 4, 4, Wd - 8, Hd - 8, 16); g.fill(); txt(g, 'SN', 60, Hd / 2, 44, '#666'); txt(g, B.serial, Wd / 2 + 40, Hd / 2 + 2, 76, '#111', 'center', true, 'ui-monospace,monospace'); }, bomb, 0.03, H / 2 + 0.001, 0.04, false).rotation.x = -PI / 2;
     const left = new THREE.Group(); left.position.set(-W / 2 - 0.001, 0, 0); left.rotation.y = -PI / 2; bomb.add(left);
     mesh(new THREE.BoxGeometry(0.11, 0.22, 0.008), M('#1a1a1a'), 0, 0, 0.004, left);
     for (let i = 0; i < B.batteries; i++) { const y = 0.075 - i * 0.05; const bt = mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.07, 14).rotateZ(PI / 2), M(i % 2 ? '#c89020' : '#2a2a2a', { metalness: 0.6, roughness: 0.3 }), 0, y, 0.02, left); mesh(new THREE.CylinderGeometry(0.0123, 0.0123, 0.025, 14).rotateZ(PI / 2), M('#c8a050', { metalness: 0.8 }), 0.022, y, 0.02, left); mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.006, 8).rotateZ(PI / 2), screwM, 0.038, y, 0.02, left); }
@@ -857,10 +872,23 @@ function startBomb(forced) {
     const order = [0, 2, 3, 4, 5].sort(() => Math.random() - 0.5).map(si => [si, 1]); if (X) order.push(...[0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).map(si => [si, -1]));
     const tm = modTimer(); tm.g.position.set(slots[1][0], slots[1][1], Dp / 2 + 0.001); bomb.add(tm.g);
     order.forEach(([si, side], i) => { const mm = mods[i] || modBlank(); mm.g.position.set(side * slots[si][0], slots[si][1], side * (Dp / 2 + 0.001)); if (side < 0) mm.g.rotation.y = PI; bomb.add(mm.g); });
-    G.mods = mods; return B;
+    G.mods = mods; COVERS = [];
+    const nCov = { mid: 1, hard: 2, expert: 3 }[G.diff] || 0; mods.slice().sort(() => Math.random() - 0.5).slice(0, nCov).forEach(mm => addCover(mm));
+    return B;
+  }
+  let COVERS = [];
+  function addCover(mm) {
+    const cg = new THREE.Group(); cg.position.z = 0.034; mm.g.add(cg); const c = { id: 'kaas', g: cg, left: 4, screws: [] };
+    const plate = mesh(new THREE.BoxGeometry(0.124, 0.124, 0.004), M('#6a7078', { metalness: 0.8, roughness: 0.35 }), 0, 0, 0, cg); hit(plate, c, 'plate');
+    canvasPlane(0.1, 0.05, 400, 200, (g, Wd, Hd) => { txt(g, '⚠ KAAS', Wd / 2, 60, 70, '#f2c230'); txt(g, 'keera 4 kruvi lahti', Wd / 2, 140, 40, '#ddd'); }, cg, 0, 0, 0.0025);
+    for (const [x, y] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const sg = new THREE.Group(); sg.position.set(x * 0.05, y * 0.05, 0.003); cg.add(sg); const head = mesh(new THREE.CylinderGeometry(0.0065, 0.0065, 0.004, 14).rotateX(PI / 2), screwM, 0, 0, 0, sg); mesh(new THREE.BoxGeometry(0.009, 0.0015, 0.0012), M('#222'), 0, 0, 0.0022, sg); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.01), new THREE.MeshBasicMaterial({ visible: false })); sg.add(hb); hit(hb, c, c.screws.length); c.screws.push({ sg, out: 0, done: false }); }
+    c.down = (part, tool) => { if (part === 'plate') { hint('Keera kruvikeerajaga 4 kruvi lahti! 🪛'); return; } const sc = c.screws[part]; if (!sc || sc.done) return; if (tool !== 'kruvi') { needTool('kruvi'); return; } sc.done = true; sc.out = 0.001; spinTool(); noise(0.5, 0.25, 1500); };
+    c.update = dt => { for (const sc of c.screws) if (sc.out > 0 && sc.sg.visible) { sc.out += dt; sc.sg.rotation.z += dt * 25; sc.sg.position.z = 0.003 + sc.out * 0.03; if (sc.out > 0.5) { sc.sg.visible = false; c.left--; tone(1800, 1200, 0.05, 'triangle', 0.08); if (c.left === 0) { c.fall = 0.001; noise(0.3, 0.4, 600); HITS = HITS.filter(h => h.userData.hit?.mod !== c); } } }
+      if (c.fall > 0) { c.fall += dt; cg.position.set(0, -c.fall * c.fall * 1.2, 0.034 + c.fall * 0.25); cg.rotation.x = c.fall * 3; if (c.fall > 0.8) { cg.visible = false; c.fall = 0; c.gone = true; } } };
+    COVERS.push(c);
   }
   function clearBomb() { if (!bomb) return; scene.remove(bomb); bomb.traverse(o => { if (o.geometry) o.geometry.dispose(); }); bomb = null; HITS = []; }
-  function startGame() { initAudio(); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : G.diff === 'expert' ? 1 : 3; G.dark = 0; G.darkNext = rnd(25, 40); G.record = false; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
+  function startGame() { initAudio(); for (const k in TL) if (TL[k].held) dropTool(TL[k]); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : G.diff === 'expert' ? 1 : 3; G.dark = 0; G.darkNext = rnd(25, 40); G.record = false; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
   function strike(m) { if (G.phase !== 'play') return; G.strikes++; G.strikeAt = Date.now(); G.rate = G.diff === 'kid' ? 1 : 1 + 0.25 * G.strikes; sfx.strike(); haptic('left', 1, 300); haptic('right', 1, 300); strikeScr.redraw(G.strikes, G.maxS); if (m && m.led) { setLed(m, '#ff2010'); setTimeout(() => !m.solved && setLed(m, '#222'), 900); } flashT = 0.35; flashCol = '#ff2010'; if (G.strikes >= G.maxS) explode(); sendState(); }
   function solve(m) { m.solved = true; G.focus = -1; setLed(m, '#20ff60'); sfx.solve(); haptic('right', 0.5, 80); if (G.mods.every(x => x.solved)) win(); sendState(); }
   function win() { G.record = addTop(G.diff, G.time, G.strikes); G.phase = 'win'; G.endAt = Date.now(); timerScr.redraw(G.time, 'KAHJUTU'); sfx.win(); alarm.intensity = 0; flashT = 0.6; flashCol = '#20ff60'; menu.last = ''; setTimeout(() => G.phase === 'win' && placeMenu(), 2500); sendState(); }
@@ -887,8 +915,8 @@ function startBomb(forced) {
     const X = G.diff === 'expert' && G.phase === 'play';
     if (X) { G.darkNext -= dt; if (G.darkNext <= 0 && !G.dark) { G.dark = rnd(6, 10); G.darkNext = rnd(25, 45); noise(0.3, 0.4, 200, 'lowpass'); tone(90, 40, 0.6, 'sawtooth', 0.12); } if (G.dark > 0) { G.dark -= dt; if (G.dark <= 0) { G.dark = 0; tone(200, 400, 0.2, 'sine', 0.08); } } } else G.dark = 0;
     const k = G.dark > 0 ? (Math.random() < 0.02 ? 0.25 : 0.02) : 1; spot.intensity = baseI.spot * k; fill.intensity = baseI.fill * k; hemiL.intensity = baseI.hemi * k;
-    torch.intensity = X && G.dark > 0 ? 14 : 0;
-    if (renderer.xr.isPresenting) { const c = ctrls.find(c => c.userData.hand === 'left' && c.userData.src) || ctrls.find(c => c.userData.src); if (c) { const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); torch.position.copy(o); torch.target.position.copy(o).addScaledVector(d, 1); } }
+    const lampT = TL.lamp; torch.intensity = lampT.held ? 14 : 0;
+    if (lampT.held && lampT.held !== 'desk') { const o = lampT.g.getWorldPosition(new THREE.Vector3()), d = new THREE.Vector3(0, 0, -1).applyQuaternion(lampT.g.getWorldQuaternion(new THREE.Quaternion())); torch.position.copy(o); torch.target.position.copy(o).addScaledVector(d, 1); }
     else { torch.position.copy(camera.getWorldPosition(new THREE.Vector3())); torch.target.position.copy(mouseTarget); }
     torch.target.updateMatrixWorld();
   }
@@ -897,23 +925,57 @@ function startBomb(forced) {
     if (boomT > 0) { boomT -= dt; flash.material.color.set('#fff4d0'); flash.material.opacity = clamp(boomT / 2, 0, 1); camera.position.x = renderer.xr.isPresenting ? 0 : (Math.random() - 0.5) * 0.03 * boomT; }
     else if (flashT > 0) { flashT -= dt; flash.material.color.set(flashCol); flash.material.opacity = flashT * 0.8; } else flash.material.opacity = 0;
     SP.forEach((s, i) => { if (s.l <= 0) return; s.l -= dt; s.v.y -= 6 * dt; s.p.addScaledVector(s.v, dt); spIM.setMatrixAt(i, s.l > 0 ? _m.compose(s.p, _q, _s.setScalar(s.l)) : _m.makeScale(0, 0, 0)); }); spIM.instanceMatrix.needsUpdate = true;
-    alarm.intensity = G.phase === 'play' && G.time < 30 ? (Math.sin(G.clock * 8) > 0 ? 6 : 0.5) : 0;
+    alarm.intensity = G.phase === 'play' ? (G.time < 30 ? (Math.sin(G.clock * (G.time < 10 ? 16 : 8)) > 0 ? 7 : 0.5) : 0.6 + 0.6 * Math.sin(G.clock * 1.5)) : 0;
   }
 
   /* --- sisend --- */
   const ray = new THREE.Raycaster(); const ctrls = [];
   const ctrlRay = (c, o, d) => { _m.identity().extractRotation(c.matrixWorld); o.setFromMatrixPosition(c.matrixWorld); d.set(0, 0, -1).applyMatrix4(_m).normalize(); };
-  function pickAt(o, d) { ray.set(o, d); ray.far = 3; const objs = [...UI, ...HITS]; if (bomb) objs.push(bomb.children[0]); const h = ray.intersectObjects(objs, false)[0]; return h || null; }
-  function press(h, who) { if (!h) return null; if (h.object.userData.panel) { h.object.userData.panel.click(h.uv); return null; } const H = h.object.userData.hit; if (!H || G.phase !== 'play') return null; H.mod.down && H.mod.down(H.part); return H; }
+  function pickAt(o, d) { ray.set(o, d); ray.far = 3; const objs = [...UI, ...HITS, ...TOOLHITS.filter(h => h.visible)]; if (bomb) objs.push(bomb.children[0]); const h = ray.intersectObjects(objs, false)[0]; return h || null; }
+  function press(h, who) { if (!h) return null; if (h.object.userData.panel) { h.object.userData.panel.click(h.uv); return null; } if (h.object.userData.tool) { grabTool(h.object.userData.tool, who); return null; } const H = h.object.userData.hit; if (!H || G.phase !== 'play') return null; lastWho = who; H.mod.down && H.mod.down(H.part, toolOf(who)); return H; }
   function release(H) { if (H && H.mod.up) H.mod.up(H.part); }
+  /* --- tööriistad --- */
+  const TL = {}, TOOLHITS = []; let deskTool = null; const deskHand = new THREE.Group(); camera.add(deskHand); deskHand.position.set(0.17, -0.15, -0.34);
+  const TNAME = { tangid: '✂️ Tangid', kruvi: '🪛 Kruvikeeraja', lamp: '🔦 Taskulamp' };
+  (() => { const steel = M('#b8bec6', { metalness: 0.9, roughness: 0.3 }); let g;
+    g = new THREE.Group(); const jaws = []; for (const s of [1, -1]) { const j = new THREE.Group(); g.add(j); mesh(new THREE.BoxGeometry(0.012, 0.008, 0.1), M('#c8281e', { roughness: 0.7, metalness: 0 }), s * 0.012, 0, 0.055, j).rotation.y = s * 0.12; mesh(new THREE.BoxGeometry(0.007, 0.006, 0.045), steel, s * 0.0035, 0, -0.022, j); jaws.push(j); } mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.012, 12), steel, 0, 0, 0, g);
+    TL.tangid = { id: 'tangid', g, jaws, home: new THREE.Vector3(0.43, 0.835, -0.3), ry: 0.5 };
+    g = new THREE.Group(); mesh(new THREE.CylinderGeometry(0.014, 0.012, 0.09, 10).rotateX(PI / 2), M('#f2c230', { roughness: 0.5, metalness: 0 }), 0, 0, 0.045, g); mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.1, 8).rotateX(PI / 2), steel, 0, 0, -0.05, g); mesh(new THREE.BoxGeometry(0.007, 0.0015, 0.01), steel, 0, 0, -0.1, g);
+    TL.kruvi = { id: 'kruvi', g, home: new THREE.Vector3(0.52, 0.838, -0.45), ry: -0.25 };
+    g = new THREE.Group(); mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.12, 12).rotateX(PI / 2), M('#222'), 0, 0, 0.03, g); mesh(new THREE.CylinderGeometry(0.022, 0.016, 0.03, 12).rotateX(PI / 2), M('#555', { metalness: 0.7 }), 0, 0, -0.04, g); const lens = mesh(new THREE.CircleGeometry(0.02, 16), new THREE.MeshBasicMaterial({ color: '#fffbe0' }), 0, 0, -0.0555, g); lens.rotation.y = PI;
+    TL.lamp = { id: 'lamp', g, home: new THREE.Vector3(0.43, 0.842, -0.6), ry: 0.9 };
+    for (const k in TL) { const t = TL[k]; scene.add(t.g); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.2), new THREE.MeshBasicMaterial({ visible: false })); hb.userData.tool = t; t.g.add(hb); t.hb = hb; TOOLHITS.push(hb); homeTool(t);
+      const lb = canvasPlane(0.1, 0.025, 400, 100, (gg, Wd, Hd) => txt(gg, { tangid: 'TANGID', kruvi: 'KRUVIKEERAJA', lamp: 'TASKULAMP' }[k], Wd / 2, Hd / 2, 60, '#f2c230'), scene, t.home.x, 0.826, t.home.z + 0.09, false); lb.rotation.x = -PI / 2; } })();
+  function homeTool(t) { t.held = null; scene.add(t.g); t.g.position.copy(t.home); t.g.rotation.set(0, t.ry, 0); t.hb.visible = true; }
+  function grabTool(t, who) { if (t.held) dropTool(t); if (who === 'desk') { if (deskTool) dropTool(deskTool); deskTool = t; deskHand.add(t.g); t.g.position.set(0, 0, 0); t.g.rotation.set(0.3, 0.35, 0); }
+    else { if (who.userData.tool) dropTool(who.userData.tool); who.userData.tool = t; who.add(t.g); t.g.position.set(0, -0.01, -0.03); t.g.rotation.set(0, 0, 0); haptic(who.userData.hand, 0.4, 40); }
+    t.held = who; sfx.click(); tone(500, 700, 0.08, 'triangle', 0.08); updToolHud(); }
+  function dropTool(t) { if (!t) return; if (t.held === 'desk') deskTool = null; else if (t.held && t.held.userData) t.held.userData.tool = null; homeTool(t); updToolHud(); }
+  function updToolHud() { $('toolHud').innerHTML = `Käes: <b>${deskTool ? TNAME[deskTool.id] : '✋ käsi'}</b> &nbsp;·&nbsp; <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp`; }
+  const toolOf = who => who === 'desk' ? (deskTool ? deskTool.id : null) : (who && who.userData && who.userData.tool ? who.userData.tool.id : null);
+  let lastWho = null;
+  function snapTool() { const t = lastWho === 'desk' ? deskTool : lastWho?.userData?.tool; if (t && t.jaws) { t.snap = 0.25; } }
+  function spinTool() { const t = lastWho === 'desk' ? deskTool : lastWho?.userData?.tool; if (t) t.spin = 0.5; }
+  function needTool(id) { hint(id === 'tangid' ? 'Juhtme lõikamiseks on vaja TANGE ✂️' : 'Selleks on vaja KRUVIKEERAJAT 🪛'); tone(220, 160, 0.2, 'sawtooth', 0.06); }
+  const hintC = cnv(1024, 160); const hintS = new THREE.Sprite(new THREE.SpriteMaterial({ map: ctex(hintC), transparent: true, depthTest: false })); hintS.scale.set(0.5, 0.078, 1); hintS.renderOrder = 60; hintS.visible = false; scene.add(hintS); let hintT = 0;
+  function hint(text) { const g = hintC.getContext('2d'); g.clearRect(0, 0, 1024, 160); rr(g, 6, 6, 1012, 148, 40); g.fillStyle = 'rgba(20,22,26,.92)'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#f2c230'; g.stroke(); fit(g, text, 512, 82, 64, '#fff', 960); hintS.material.map.needsUpdate = true; hintS.visible = true; hintT = 2.5; }
+  function updateTools(dt) {
+    for (const k in TL) { const t = TL[k]; t.hb.visible = !t.held;
+      if (t.jaws) { const a = t.snap > 0 ? 0 : 0.18; if (t.snap > 0) t.snap -= dt; t.jaws[0].rotation.y += (a - t.jaws[0].rotation.y) * Math.min(1, dt * 20); t.jaws[1].rotation.y = -t.jaws[0].rotation.y; }
+      if (t.spin > 0) { t.spin -= dt; t.g.rotation.z += dt * 25; } else if (t.held) t.g.rotation.z *= 0.8; }
+    if (hintT > 0) { hintT -= dt; hintS.visible = hintT > 0; const bp = bomb ? bomb.position : BOMB_HOME; hintS.position.set(bp.x, bp.y + 0.3, bp.z); hintS.material.opacity = Math.min(1, hintT * 2); }
+    for (const c of COVERS) c.update(dt);
+  }
+  addEventListener('keydown', e => { const k = { Digit1: null, Digit2: 'tangid', Digit3: 'kruvi', Digit4: 'lamp' }; if (!(e.code in k)) return; if (k[e.code]) grabTool(TL[k[e.code]], 'desk'); else if (deskTool) dropTool(deskTool); });
   // VR
   const cmf = new XRControllerModelFactory();
   for (let i = 0; i < 2; i++) {
     const c = renderer.xr.getController(i); c.userData = {}; const gr = renderer.xr.getControllerGrip(i); gr.add(cmf.createControllerModel(gr)); rig.add(c, gr); ctrls.push(c);
     c.addEventListener('connected', e => { c.userData.hand = e.data.handedness; c.userData.src = e.data; });
-    c.addEventListener('selectstart', () => { initAudio(); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); c.userData.act = press(pickAt(o, d)); if (c.userData.act) haptic(c.userData.hand, 0.3, 30); });
+    c.addEventListener('selectstart', () => { initAudio(); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); c.userData.act = press(pickAt(o, d), c); if (c.userData.act) haptic(c.userData.hand, 0.3, 30); });
     c.addEventListener('selectend', () => { release(c.userData.act); c.userData.act = null; });
-    c.addEventListener('squeezestart', () => { if (!bomb) return; const cp = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); if (cp.distanceTo(bomb.position) < 0.4 || (h && !h.object.userData.panel)) { c.userData.grab = new THREE.Matrix4().copy(c.matrixWorld).invert().multiply(bomb.matrixWorld); haptic(c.userData.hand, 0.4, 50); } });
+    c.addEventListener('squeezestart', () => { if (c.userData.tool) { dropTool(c.userData.tool); return; } { const cp0 = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o0 = new THREE.Vector3(), d0 = new THREE.Vector3(); ctrlRay(c, o0, d0); const h0 = pickAt(o0, d0); let t = h0 && h0.object.userData.tool; if (!t) for (const k in TL) if (!TL[k].held && TL[k].g.position.distanceTo(cp0) < 0.14) t = TL[k]; if (t) { grabTool(t, c); return; } }
+      if (!bomb) return; const cp = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); if (cp.distanceTo(bomb.position) < 0.4 || (h && !h.object.userData.panel)) { c.userData.grab = new THREE.Matrix4().copy(c.matrixWorld).invert().multiply(bomb.matrixWorld); haptic(c.userData.hand, 0.4, 50); } });
     c.addEventListener('squeezeend', () => { c.userData.grab = null; });
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, -1)]), new THREE.LineBasicMaterial({ color: '#f2c230', transparent: true, opacity: 0.7 })); c.add(line); c.userData.line = line;
     const dot = new THREE.Mesh(new THREE.SphereGeometry(0.004, 8, 6), new THREE.MeshBasicMaterial({ color: '#fff', depthTest: false })); dot.renderOrder = 50; scene.add(dot); c.userData.dot = dot;
@@ -922,7 +984,7 @@ function startBomb(forced) {
   const mouse = new THREE.Vector2(); let mAct = null, rdrag = null; const cvs = renderer.domElement;
   cvs.addEventListener('contextmenu', e => e.preventDefault());
   const mouseRay = e => { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); return [ray.ray.origin.clone(), ray.ray.direction.clone()]; };
-  cvs.addEventListener('mousedown', e => { initAudio(); if (e.button === 2) { rdrag = { x: e.clientX, y: e.clientY }; return; } if (e.button !== 0) return; const [o, d] = mouseRay(e); mAct = press(pickAt(o, d)); });
+  cvs.addEventListener('mousedown', e => { initAudio(); if (e.button === 2) { rdrag = { x: e.clientX, y: e.clientY }; return; } if (e.button !== 0) return; const [o, d] = mouseRay(e); mAct = press(pickAt(o, d), 'desk'); });
   addEventListener('mouseup', e => { if (e.button === 2) rdrag = null; if (e.button === 0) { release(mAct); mAct = null; } });
   addEventListener('mousemove', e => { { const [o0, d0] = mouseRay(e); mouseTarget.copy(o0).addScaledVector(d0, 1); } if (rdrag && bomb) { const dx = e.clientX - rdrag.x, dy = e.clientY - rdrag.y; rdrag = { x: e.clientX, y: e.clientY }; bomb.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), dx * 0.008); const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); bomb.rotateOnWorldAxis(right, dy * 0.008); } const [o, d] = mouseRay(e); hoverH = pickAt(o, d); });
   addEventListener('wheel', e => { if (renderer.xr.isPresenting) return; camera.fov = clamp(camera.fov + e.deltaY * 0.03, 22, 70); camera.updateProjectionMatrix(); });
@@ -947,15 +1009,22 @@ function startBomb(forced) {
   const clock = new THREE.Clock(); G.clock = 0; let lastSec = -1, sendT = 0, menuT = 0;
   function step(dt) {
     G.clock += dt;
-    if (G.phase === 'play') { G.time -= dt * G.rate; const s = Math.floor(G.time); if (s !== lastSec) { lastSec = s; timerScr.redraw(G.time); sfx.tick(G.time < 30); } for (const m of G.mods) m.update && m.update(dt); if (G.time <= 0) { G.time = 0; timerScr.redraw(0); explode(); } }
+    updateTools(dt);
+    if (G.phase === 'play') { G.time -= dt * G.rate; const s = Math.floor(G.time); if (s !== lastSec) { lastSec = s; timerScr.redraw(G.time); if (G.time < 20) heart(); }
+      const tr = G.time > 60 ? 1 : G.time > 30 ? 2 : G.time > 10 ? 4 : 8; G.tickAcc = (G.tickAcc || 0) + dt; if (G.tickAcc >= 1 / tr) { G.tickAcc = 0; sfx.tick(G.time < 30); if (G.time < 10) tone(2200, 2200, 0.04, 'square', 0.04); if (G.bombLed) { G.bombLed.material.emissiveIntensity = 4; G.ledT = 0.06; } }
+      if (G.ledT > 0) { G.ledT -= dt; if (G.ledT <= 0 && G.bombLed) G.bombLed.material.emissiveIntensity = 0; }
+      updDrone(); if (!renderer.xr.isPresenting && G.time < 10) camera.position.x = (Math.random() - 0.5) * 0.004 * (10 - G.time) / 10;
+      for (const m of G.mods) m.update && m.update(dt); if (G.time <= 0) { G.time = 0; timerScr.redraw(0); explode(); } }
+    else stopDrone();
     updatePointers(); updateFX(dt);
     sendT += dt; if (sendT > (G.diff === 'kid' ? 0.15 : 0.3)) { sendT = 0; sendState(); }
     menuT += dt; if (menuT > 0.5) { menuT = 0; const on = manualOn(); if (on && !G.wasOn) { sfx.solve(); G.solo = false; } G.wasOn = on; const sig = [G.phase, on, netStatus, code, G.strikes, G.mods.filter(m => m.solved).length, G.diff, G.solo, G.phase === 'lobby' && !on ? Math.floor(G.clock * 2) : 0].join('|'); if (sig !== menu.last) { menu.last = sig; menu.refresh(); } $('hudNet').textContent = manualOn() ? 'Juhendaja on ühendatud ✓' : netStatus === 'nopeer' ? 'Võrguteek ei laadinud – testi sama arvuti teise vahelehega' : 'Ootan juhendajat…'; }
   }
   renderer.setAnimationLoop(() => { const dt = Math.min(clock.getDelta(), 0.05); step(dt); renderer.render(scene, camera); });
   connect();
-  window.GAME = { G, get bomb() { return bomb; }, get code() { return code; }, startGame, step, press: (mod, part) => mod.down && mod.down(part), up: (mod, part) => mod.up && mod.up(part), sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); } };
+  window.GAME = { G, get covers() { return COVERS; }, TL, grabTool, get bomb() { return bomb; }, get code() { return code; }, startGame, step, press: (mod, part, tool = 'tangid') => mod.down && mod.down(part, tool), up: (mod, part) => mod.up && mod.up(part), sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); } };
 }
 </script>
 </body>
 </html>
+[index (61).html](https://github.com/user-attachments/files/34201827/index.61.html)
