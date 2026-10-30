@@ -1,5 +1,4 @@
-[index (59).html](https://github.com/user-attachments/files/34199248/index.59.html)
-<!doctype html>
+[index (60).html](https://github.com/user-attachments/files/34200638/index.60.html)<!doctype html>
 <html lang="et">
 <head>
 <meta charset="utf-8">
@@ -66,6 +65,21 @@
   .arrows small{position:absolute;top:-2px;left:6px;font-size:14px;letter-spacing:0}
   .animal{width:120px;padding:8px;border-radius:16px;border:4px solid #2a241a;background:#fff;cursor:pointer;box-shadow:0 4px 0 #2a241a}
   .animal div:first-child{font-size:56px}.animal div:last-child{font-weight:800;font-size:18px}
+  #mnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:#fff;font-size:14px}
+  #mnav button{border:0;border-radius:8px;background:#3a3f49;color:#fff;padding:6px 10px;font-size:14px;cursor:pointer}
+  #mnav button.on{background:#f2c230;color:#111;font-weight:bold}
+  #mnav .pg{font-size:18px;padding:6px 14px;background:#f2c230;color:#111;font-weight:bold}
+  .pgn{font-weight:bold;font-size:16px;min-width:90px;text-align:center}.pgsep{width:10px}
+  .phead{display:flex;justify-content:space-between;font-size:13px;opacity:.6;border-bottom:1px solid #b9ab88;margin-bottom:12px;padding-bottom:4px}
+  .pfoot{display:flex;justify-content:space-between;margin-top:20px}
+  .pfoot button{font-size:18px;padding:8px 16px;border-radius:10px;border:2px solid #2a241a;background:#fff;cursor:pointer}
+  .fluff{color:#5a5040;font-size:15px!important;font-style:italic}
+  table.spec td{text-align:left;font-size:14px;padding:3px 10px}
+  .symcols{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+  .symcols div{display:flex;flex-direction:column;align-items:center;background:#fff;border:2px solid #2a241a;border-radius:8px;padding:6px}
+  .symcols canvas{width:52px;height:52px;border-bottom:1px solid #ddd}
+  table.toc td{text-align:left;padding:6px 14px} table.morse td{padding:4px 10px}
+  .lines{height:220px;background:repeating-linear-gradient(#f6efdc 0 31px,#c9bc98 31px 32px)}
   #banner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,110px);font-weight:900;z-index:20;pointer-events:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -94,7 +108,7 @@
   <div id="hudNet">Ootan juhendajat…</div>
   <hr style="border-color:#444">
   <b>Quest:</b> vajuta all <b>ENTER VR</b>. Päästik = vajuta/lõika. Haare = võta pomm kätte ja keera.<br>
-  <b>Arvutis:</b> vasak klõps = vajuta/lõika (hoia nuppu all, kui vaja). Parem nupp + lohista = keera pommi. Ratas = suumi.
+  <b>Arvutis:</b> vasak klõps = vajuta/lõika (hoia nuppu all, kui vaja). Parem nupp + lohista = keera pommi. F = pööra ümber (ekspert: moodulid ka taga!). Tühik = tagasi. Ratas = suumi.
   <br><button class="btn" style="font-size:13px;padding:4px 10px;margin-top:6px" onclick="this.parentNode.classList.add('hide')">Peida</button>
 </div>
 
@@ -123,21 +137,14 @@ function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let 
 const WCOL = ['punane', 'sinine', 'kollane', 'valge', 'must', 'roheline'];
 const WHEX = { punane: '#d23a2e', sinine: '#2f62d8', kollane: '#f0c820', valge: '#f2f2f2', must: '#1a1a1a', roheline: '#2f9a44' };
 const VOWELS = 'AEIOU';
+const ORDN = ['esimene', 'teine', 'kolmas', 'neljas', 'viies', 'kuues'];
+const ORDG = ['esimest', 'teist', 'kolmandat', 'neljandat', 'viiendat', 'kuuendat'];
 function lastDigit(ser) { for (let i = ser.length - 1; i >= 0; i--) if (/\d/.test(ser[i])) return +ser[i]; return 0; }
 const cnt = (a, c) => a.filter(x => x === c).length;
-function wireAnswer(c, B) {
-  const n = c.length;
-  if (n === 3) { if (c[0] === 'must') return 2; if (new Set(c).size === 2) { for (let i = 0; i < 3; i++) if (cnt(c, c[i]) === 1) return i; } return 0; }
-  if (n === 4) { if (lastDigit(B.serial) % 2 === 0) return 1; if (cnt(c, 'kollane') > cnt(c, 'punane')) return c.lastIndexOf('kollane'); if (!c.includes('roheline')) return 0; return 3; }
-  if (n === 5) { if (c[4] === 'sinine') return 0; if (B.batteries >= 2 && c.includes('valge')) return c.indexOf('valge'); return 2; }
-  if (!c.includes('punane')) return 4; if (cnt(c, 'must') === 1) return c.indexOf('must'); if ([...B.serial].some(ch => VOWELS.includes(ch))) return 0; return 5;
-}
+const rp = (r, a) => a[(r() * a.length) | 0];
+function shuffleR(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (r() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
 const BCOL = ['punane', 'sinine', 'kollane', 'valge'], BLAB = ['VAJUTA', 'HOIA', 'STOPP', 'OOTA'];
-function buttonAction(col, lab, B) { if (col === 'sinine' && lab === 'OOTA') return 'hold'; if (B.batteries > 2) return 'tap'; if (col === 'punane') return 'hold'; if (lab === 'VAJUTA') return 'tap'; return 'hold'; }
-const STRIP = { punane: 2, kollane: 7, sinine: 6, roheline: 0 };
-function switchTarget(L) { const k = L.filter(Boolean).length; if (k === 0 || k === 5) return [1, 1, 1, 1, 1]; if (k === 1) return L.map(x => x ? 1 : 0); if (k === 2) return L.map(x => x ? 0 : 1); if (k === 3) return L[0] ? [1, 0, 1, 0, 1] : [0, 1, 0, 1, 0]; return L.map(x => x ? 0 : 1); }
 const WORDS = { KASS: '3172', KOER: '5904', HUNT: '8261', KARU: '4417', REBANE: '6038', 'PÕDER': '1725', ILVES: '9350', 'JÄNES': '2846', SIIL: '7093', ORAV: '3561', KONN: '0482', KULL: '6614' };
-function keypadCode(word, B) { const c = WORDS[word]; return (B.indicator === 'MAA' && B.indLit) ? [...c].reverse().join('') : c; }
 const MCOL = ['punane', 'oranž', 'kollane', 'roheline', 'sinine', 'lilla'];
 const MHEX = { punane: '#d23a2e', 'oranž': '#ee8a20', kollane: '#e8c418', roheline: '#2f9a44', sinine: '#2f62d8', lilla: '#9a4ad8' };
 const MN = 5;
@@ -147,12 +154,70 @@ function makeMaze(seed) {
   while (st.length) { const [x, y] = st[st.length - 1]; const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => [x + dx, y + dy, dx, dy]).filter(([a, b]) => a >= 0 && b >= 0 && a < MN && b < MN && !seen.has(a + ',' + b));
     if (!nb.length) { st.pop(); continue; } const [a, b, dx, dy] = nb[(r() * nb.length) | 0];
     if (dx === 1) E[y][x] = false; if (dx === -1) E[y][a] = false; if (dy === 1) Sw[y][x] = false; if (dy === -1) Sw[b][x] = false; seen.add(a + ',' + b); st.push([a, b]); }
-  // paar lisaavaust, et oleks mitu teed
   for (let i = 0; i < 3; i++) { const x = (r() * (MN - 1)) | 0, y = (r() * MN) | 0; E[y][x] = false; }
   return { E, S: Sw };
 }
-const MAZES = MCOL.map((c, i) => makeMaze(i + 1));
 function canMove(mz, x, y, dx, dy) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= MN || ny >= MN) return false; if (dx === 1) return !mz.E[y][x]; if (dx === -1) return !mz.E[y][nx]; if (dy === 1) return !mz.S[y][x]; return !mz.S[ny][x]; }
+// --- uued moodulid ---
+const PCOL = ['punane', 'sinine', 'roheline', 'kollane'];
+const PHEX = { punane: '#e8302a', sinine: '#2a6aff', roheline: '#22c050', kollane: '#ffd020' };
+const MW = ['KALA', 'MAJA', 'PUU', 'KIVI', 'LUMI', 'TULI', 'VESI', 'AKEN', 'LAUD', 'KOOL', 'LINN', 'PILV'];
+const FREQS = MW.map((w, i) => (3.505 + i * 0.01).toFixed(3));
+const MORSE = { A: '.-', B: '-...', C: '-.-.', D: '-..', E: '.', F: '..-.', G: '--.', H: '....', I: '..', J: '.---', K: '-.-', L: '.-..', M: '--', N: '-.', O: '---', P: '.--.', R: '.-.', S: '...', T: '-', U: '..-', V: '...-', Z: '--..' };
+const QCOL = ['punane', 'sinine', 'must'], QLET = ['A', 'B', 'C'];
+// sümbolid: igaüks on kahe kujundi kombinatsioon
+const PRIM = [
+  g => { g.beginPath(); g.arc(0, 0, .7, 0, Math.PI * 2); g.stroke(); },
+  g => { g.beginPath(); g.arc(0, .15, .7, Math.PI, 0); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.7, .6); g.lineTo(0, -.7); g.lineTo(.7, .6); g.closePath(); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.7, -.6); g.lineTo(0, .7); g.lineTo(.7, -.6); g.stroke(); },
+  g => { g.strokeRect(-.55, -.55, 1.1, 1.1); },
+  g => { g.beginPath(); g.moveTo(0, -.8); g.lineTo(.8, 0); g.lineTo(0, .8); g.lineTo(-.8, 0); g.closePath(); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(0, -.85); g.lineTo(0, .85); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.85, 0); g.lineTo(.85, 0); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.6, -.6); g.lineTo(.6, .6); g.moveTo(.6, -.6); g.lineTo(-.6, .6); g.stroke(); },
+  g => { g.beginPath(); g.arc(0, 0, .17, 0, Math.PI * 2); g.fill(); },
+  g => { g.beginPath(); g.arc(-.38, -.58, .13, 0, Math.PI * 2); g.arc(.38, -.58, .13, 0, Math.PI * 2); g.fill(); },
+  g => { g.beginPath(); for (let i = 0; i <= 20; i++) { const x = -.8 + i * .08, y = Math.sin(i / 20 * Math.PI * 3) * .25 + .45; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.4, -.4); g.lineTo(0, -.85); g.lineTo(.4, -.4); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(.3, -.8); g.lineTo(.3, .35); g.arc(0, .35, .3, 0, Math.PI); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(-.75, .5); g.lineTo(-.4, -.4); g.lineTo(0, .5); g.lineTo(.4, -.4); g.lineTo(.75, .5); g.stroke(); },
+  g => { g.beginPath(); g.arc(0, 0, .7, Math.PI * .3, Math.PI * 1.7); g.stroke(); },
+  g => { g.beginPath(); g.arc(0, -.55, .22, 0, Math.PI * 2); g.stroke(); },
+  g => { g.beginPath(); g.moveTo(0, .3); g.lineTo(0, .9); g.moveTo(-.3, .9); g.lineTo(.3, .9); g.stroke(); },
+];
+const GLYPHS = (() => { const r = mulberry(4242), pairs = []; for (let i = 0; i < PRIM.length; i++) for (let j = i + 1; j < PRIM.length; j++) pairs.push([i, j]); return shuffleR(pairs, r).slice(0, 28); })();
+function drawGlyph(g, id, cx, cy, sz, col) { g.save(); g.translate(cx, cy); g.scale(sz / 2, sz / 2); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 0.13; g.lineCap = 'round'; g.lineJoin = 'round'; for (const p of GLYPHS[id]) PRIM[p](g); g.restore(); }
+// --- väljaanded ---
+const RULES = {};
+function RU(ed = 1) {
+  if (RULES[ed]) return RULES[ed]; const r = mulberry(ed * 1013 + 77), R = { ed }; const bit = () => (r() * 2) | 0;
+  if (ed === 1) R.w = { c3: 'must', d3: 2, def3: 0, par4: 0, c4a: 'kollane', c4b: 'punane', c4n: 'roheline', d4p: 1, d4n: 0, def4: 3, c5l: 'sinine', d5l: 0, c5w: 'valge', bat5: 2, def5: 2, c6n: 'punane', d6n: 4, c6o: 'must', def6: 5 };
+  else { const cs = shuffleR(WCOL, r); R.w = { c3: cs[0], d3: rp(r, [1, 2]), def3: rp(r, [0, 1, 2]), par4: bit(), c4a: cs[1], c4b: cs[2], c4n: cs[3], d4p: rp(r, [0, 1, 2]), d4n: rp(r, [0, 3]), def4: rp(r, [1, 2, 3]), c5l: cs[4], d5l: rp(r, [0, 1]), c5w: cs[5], bat5: 1 + ((r() * 3) | 0), def5: rp(r, [2, 3, 4]), c6n: cs[2], d6n: rp(r, [2, 3, 4]), c6o: cs[0], def6: rp(r, [1, 5]) }; }
+  if (ed === 1) R.b = { c1: 'sinine', l1: 'OOTA', a1: 'hold', batT: 2, c2: 'punane', a2: 'hold', l2: 'VAJUTA', a3: 'tap', def: 'hold', strip: { punane: 2, kollane: 7, sinine: 6, roheline: 0 } };
+  else { const c1 = rp(r, BCOL), l1 = rp(r, BLAB), dg = shuffleR([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], r); R.b = { c1, l1, a1: rp(r, ['hold', 'tap']), batT: 1 + ((r() * 3) | 0), c2: rp(r, BCOL.filter(c => c !== c1)), a2: rp(r, ['hold', 'tap']), l2: rp(r, BLAB.filter(l => l !== l1)), a3: rp(r, ['hold', 'tap']), def: 'hold', strip: { punane: dg[0], kollane: dg[1], sinine: dg[2], roheline: dg[3] } }; }
+  R.s = ed === 1 ? { all: 1, one: 0, two: 0, p3a: [1, 0, 1, 0, 1], p3b: [0, 1, 0, 1, 0], four: 0 } : { all: bit(), one: bit(), two: bit(), p3a: [bit(), bit(), bit(), bit(), bit()], p3b: [bit(), bit(), bit(), bit(), bit()], four: bit() };
+  R.k = ed === 1 ? { codes: WORDS, ind: 'MAA', lit: true } : { codes: Object.fromEntries(Object.keys(WORDS).map(w => [w, String((r() * 10000) | 0).padStart(4, '0')])), ind: rp(r, ['MAA', 'VAL', 'TUL', 'KAS']), lit: r() < 0.5 };
+  R.mz = MCOL.map((c, i) => makeMaze(ed === 1 ? i + 1 : ed * 100 + i));
+  R.p = [0, 1, 2].map(() => shuffleR(PCOL, r));
+  R.f = shuffleR(FREQS, r);
+  R.cols = (() => { for (let t = 0; t < 200; t++) { const cols = [0, 1, 2, 3, 4, 5].map(() => shuffleR([...Array(28).keys()], r).slice(0, 7)); return cols; } })();
+  R.m = [0, 1, 2, 3].map(s => [0, 1, 2, 3].map(() => { const t = s === 0 ? rp(r, ['pos', 'lab']) : rp(r, ['pos', 'lab', 'ppos', 'plab', 'pos']); return { t, v: t.startsWith('p') && t !== 'pos' ? 1 + ((r() * s) | 0) : 1 + ((r() * 4) | 0) }; }));
+  R.q = Object.fromEntries(QCOL.map(c => [c, [...Array(9)].map(() => { const s = QLET.filter(() => r() < 0.45); return s.length ? s : [rp(r, QLET)]; })]));
+  return RULES[ed] = R;
+}
+const STRIP = RU(1).b.strip, MAZES = RU(1).mz;
+function wireAnswer(c, B) { const w = RU(B.ed || 1).w, n = c.length;
+  if (n === 3) { if (c[0] === w.c3) return w.d3; if (new Set(c).size === 2) { for (let i = 0; i < 3; i++) if (cnt(c, c[i]) === 1) return i; } return w.def3; }
+  if (n === 4) { if (lastDigit(B.serial) % 2 === w.par4) return w.d4p; if (cnt(c, w.c4a) > cnt(c, w.c4b)) return c.lastIndexOf(w.c4a); if (!c.includes(w.c4n)) return w.d4n; return w.def4; }
+  if (n === 5) { if (c[4] === w.c5l) return w.d5l; if (B.batteries >= w.bat5 && c.includes(w.c5w)) return c.indexOf(w.c5w); return w.def5; }
+  if (!c.includes(w.c6n)) return w.d6n; if (cnt(c, w.c6o) === 1) return c.indexOf(w.c6o); if ([...B.serial].some(ch => VOWELS.includes(ch))) return 0; return w.def6; }
+function buttonAction(col, lab, B) { const b = RU(B.ed || 1).b; if (col === b.c1 && lab === b.l1) return b.a1; if (B.batteries > b.batT) return 'tap'; if (col === b.c2) return b.a2; if (lab === b.l2) return b.a3; return b.def; }
+function switchTarget(L, R = RU(1)) { const s = R.s, k = L.filter(Boolean).length; if (k === 0 || k === 5) return [s.all, s.all, s.all, s.all, s.all]; if (k === 1) return L.map(x => x ? 1 ^ s.one : s.one); if (k === 2) return L.map(x => x ? s.two : 1 ^ s.two); if (k === 3) return L[0] ? s.p3a.slice() : s.p3b.slice(); return L.map(x => x ? s.four : 1 ^ s.four); }
+function keypadCode(word, B) { const k = RU(B.ed || 1).k; const c = k.codes[word]; return (B.indicator === k.ind && B.indLit === k.lit) ? [...c].reverse().join('') : c; }
+const batRow = b => b <= 1 ? 0 : b <= 3 ? 1 : 2;
+window.RULESX = { RU, canMove, batRow, PCOL, FREQS };
+
 
 /* ============ ÜHINE: VÕRK ============ */
 const PEER_PREFIX = 'pomminimetajad-v1-';
@@ -194,7 +259,7 @@ if (params.get('roll') === 'juhend' && params.get('kood')) setTimeout(() => star
 function startManual(code) {
   $('start').classList.add('hide'); $('manual').classList.remove('hide'); document.body.style.background = '#d9cfb4';
   buildManual(); setupKid();
-  let last = 0, st = null, netStat = '', lastPhase = '';
+  let last = 0, st = null, netStat = '', lastPhase = '', lastDiff = '';
   const net = makeNet(code, 'manual', m => { if (m && m.type === 'st') { last = performance.now(); st = m; render(); } }, s => { netStat = s; render(); });
   setInterval(() => net.send({ type: 'hi' }), 1500); net.send({ type: 'hi' });
   setInterval(render, 500);
@@ -203,6 +268,7 @@ function startManual(code) {
     if (!alive) { $('mStat').textContent = `Kood ${code} · ` + (netStat === 'nopeer' ? 'võrguühendus puudub – proovi sama arvuti teist vahelehte' : netStat.startsWith('err') ? 'ootan pommimeest… (' + netStat.slice(4) + ')' : 'ootan pommimeest…'); $('mTime').textContent = '-:--'; return; }
     const ph = st.phase;
     if (ph === 'play' && lastPhase !== 'play' && lastPhase !== '') kidReset(); lastPhase = ph;
+    if (st.diff !== lastDiff) { lastDiff = st.diff; if (st.diff === 'expert' && !$('kid').classList.contains('hide')) $('mFull').click(); }
     LIVE = ph === 'play' && st.kid ? st : null; if (LIVE && $('kid').classList.contains('hide')) $('mKid').click(); kidRender();
     $('mTime').textContent = ph === 'lobby' ? '-:--' : fmt(st.time);
     $('mStrikes').textContent = ph === 'lobby' ? '' : '✕'.repeat(st.strikes) + '○'.repeat(Math.max(0, st.maxS - st.strikes));
@@ -213,70 +279,104 @@ function startManual(code) {
   }
 }
 const fmt = t => { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
-function buildManual() {
-  const secs = [['alg', 'Pommi küljed'], ['juhtmed', 'Juhtmed'], ['nupp', 'Nupp'], ['lulitid', 'Lülitid'], ['kood', 'Koodilukk'], ['lab', 'Labürint']];
-  $('mnav').innerHTML = secs.map(([id, n]) => `<a href="#${id}">${n}</a>`).join('');
-  const wr = Object.entries(WORDS);
-  $('mbody').innerHTML = `
-  <div class="page" id="alg"><h2>Pommi lahtimuukimise juhend</h2>
-   <p>Sina oled juhendaja. Pommimees kirjeldab sulle, mida ta näeb, ja sina ütled talle, mida teha. Pommil on taimer ja mitu moodulit. Iga moodul tuleb lahti muukida. Kui moodul on valmis, süttib selle nurgas <b>roheline tuli</b>.</p>
-   <div class="warn">Iga vale tegu on <b>viga</b> (✕). Kui vigu tuleb 3, pomm plahvatab. Iga viga kiirendab ka taimerit!</div>
-   <h3>Pommi küljed</h3><p>Paljud reeglid vajavad infot pommi külgedelt. Pommimees peab pommi keerama ja vaatama:</p>
-   <ul><li><b>Seerianumber</b> – pommi pealmisel küljel, nt <code>KR4-79B</code>. "Viimane number" tähendab seerianumbri viimast numbrit (tähti ei arvestata).</li>
-   <li><b>Patareid</b> – pommi vasakul küljel. Loe kokku, mitu patareid on.</li>
-   <li><b>Indikaator</b> – pommi paremal küljel: kolmetäheline silt (nt MAA) ja lamp, mis kas põleb või ei põle.</li></ul>
-   <p>Täishäälikud on A, E, I, O, U.</p></div>
-
-  <div class="page" id="juhtmed"><h2>Juhtmed</h2>
-   <p>Moodulil on 3–6 värvilist juhet. Lõigata tuleb <b>täpselt üks</b> juhe. Juhtmeid loetakse <b>ülevalt alla</b>. Leia õige juhtmete arvu lõik ja kasuta <b>esimest reeglit, mis sobib</b>.</p>
-   <h3>3 juhet</h3><ol><li>Kui esimene juhe on must, lõika kolmas.</li><li>Kui kaks juhet on sama värvi, lõika see juhe, mis on teist värvi.</li><li>Muidu lõika esimene.</li></ol>
-   <h3>4 juhet</h3><ol><li>Kui seerianumbri viimane number on paarisarv (0, 2, 4, 6, 8), lõika teine.</li><li>Kui kollaseid juhtmeid on rohkem kui punaseid, lõika viimane kollane.</li><li>Kui rohelist juhet pole, lõika esimene.</li><li>Muidu lõika neljas.</li></ol>
-   <h3>5 juhet</h3><ol><li>Kui viimane (viies) juhe on sinine, lõika esimene.</li><li>Kui patareisid on 2 või rohkem ja on valge juhe, lõika esimene valge.</li><li>Muidu lõika kolmas.</li></ol>
-   <h3>6 juhet</h3><ol><li>Kui punast juhet pole, lõika viies.</li><li>Kui on täpselt üks must juhe, lõika must.</li><li>Kui seerianumbris on täishäälik, lõika esimene.</li><li>Muidu lõika kuues.</li></ol></div>
-
-  <div class="page" id="nupp"><h2>Nupp</h2>
-   <p>Moodulil on suur värviline nupp, millel on kiri. Kasuta <b>esimest reeglit, mis sobib</b>:</p>
-   <ol><li>Kui nupp on sinine ja kiri on <b>OOTA</b> → <b>hoia all</b>.</li><li>Kui patareisid on rohkem kui 2 → <b>vajuta ja lase kohe lahti</b>.</li><li>Kui nupp on punane → <b>hoia all</b>.</li><li>Kui kiri on <b>VAJUTA</b> → <b>vajuta ja lase kohe lahti</b>.</li><li>Muidu → <b>hoia all</b>.</li></ol>
-   <h3>Kui nuppu tuleb all hoida</h3><p>Nupu kõrval süttib värviline riba. Hoia nuppu all ja lase lahti siis, kui <b>taimeri viimane number</b> on:</p>
-   <table><tr><th>Riba värv</th><th>Lase lahti, kui taimeri viimane number on</th></tr><tr><td>punane</td><td>2</td></tr><tr><td>kollane</td><td>7</td></tr><tr><td>sinine</td><td>6</td></tr><tr><td>roheline</td><td>0</td></tr></table>
-   <p>Näide: taimer 2:3<b>7</b> → viimane number on 7.</p></div>
-
-  <div class="page" id="lulitid"><h2>Lülitid</h2>
-   <p>Moodulil on üleval 5 lampi ja nende all 5 lülitit. Lülitid loetakse <b>vasakult paremale</b>. Pane lülitid õigesse asendisse ja vajuta <b>VALMIS</b>. Vale asend on viga.</p>
-   <table><tr><th>Mitu lampi põleb?</th><th>Lülitid</th></tr>
-   <tr><td>0 või 5</td><td>kõik <b>ÜLES</b></td></tr>
-   <tr><td>1</td><td>põleva lambi all olev lüliti <b>ÜLES</b>, teised <b>ALLA</b></td></tr>
-   <tr><td>2</td><td>põlevate lampide all olevad lülitid <b>ALLA</b>, teised <b>ÜLES</b></td></tr>
-   <tr><td>3, esimene lamp põleb</td><td>ÜLES – ALLA – ÜLES – ALLA – ÜLES</td></tr>
-   <tr><td>3, esimene lamp ei põle</td><td>ALLA – ÜLES – ALLA – ÜLES – ALLA</td></tr>
-   <tr><td>4</td><td>kustunud lambi all olev lüliti <b>ÜLES</b>, teised <b>ALLA</b></td></tr></table></div>
-
-  <div class="page" id="kood"><h2>Koodilukk</h2>
-   <p>Moodulil on ekraan, millel on loomanimi, ja numbriklaviatuur. Leia nimi tabelist ja ütle pommimehele 4-kohaline kood.</p>
-   <div class="warn">Kui pommi indikaatori silt on <b>MAA</b> ja selle lamp <b>põleb</b>, tuleb kood sisestada <b>tagurpidi</b> (nt 1234 → 4321).</div>
-   <table><tr><th>Sõna</th><th>Kood</th><th>Sõna</th><th>Kood</th></tr>
-   ${wr.slice(0, 6).map(([w, c], i) => `<tr><td>${w}</td><td><b>${c}</b></td><td>${wr[i + 6][0]}</td><td><b>${wr[i + 6][1]}</b></td></tr>`).join('')}</table>
-   <p>Klahv <b>C</b> kustutab. Vale kood on viga.</p></div>
-
-  <div class="page" id="lab"><h2>Labürint</h2>
-   <p>Moodulil on 5×5 täppidega ekraan ja 4 noolt. <b>Roheline ring</b> on pommimees, <b>punane rist</b> on siht. Pommimees <b>ei näe seinu</b>, sina näed! Ekraani <b>raami värv</b> ütleb, milline labürint see on.</p>
-   <p>Küsi, mitmendas reas (ülevalt) ja mitmendas veerus (vasakult) on roheline ring ja punane rist. Juhata ta nooltega sihini. Vastu seina minek on viga.</p>
-   <div class="mazes">${MCOL.map((c, i) => `<div><canvas id="mz${i}" width="170" height="170"></canvas><br>${c}</div>`).join('')}</div></div>
-  <div style="height:40px"></div>`;
-  MCOL.forEach((c, i) => drawMazeManual($('mz' + i), MAZES[i], MHEX[c]));
+let BOOK_ED = 1, BOOK_PAGE = 0, BOOK = [];
+function buildManual() { BOOK = bookPages(RU(BOOK_ED)); renderBook(); addEventListener('keydown', e => { if ($('mbody').classList.contains('hide')) return; if (e.key === 'ArrowRight') turn(1); if (e.key === 'ArrowLeft') turn(-1); }); }
+function turn(d) { BOOK_PAGE = clamp(BOOK_PAGE + d, 0, BOOK.length - 1); renderBook(); scrollTo(0, 0); }
+function renderBook() {
+  const nav = $('mnav');
+  nav.innerHTML = `<button class="pg" data-p="-1">◀</button><span class="pgn">Leht ${BOOK_PAGE + 1} / ${BOOK.length}</span><button class="pg" data-p="1">▶</button>
+   <span class="pgsep"></span>${BOOK.map((p, i) => `<button class="pgd${i === BOOK_PAGE ? ' on' : ''}" data-go="${i}">${i + 1}</button>`).join('')}
+   <span class="pgsep"></span>Väljaanne: ${[1, 2, 3].map(e => `<button class="pge${e === BOOK_ED ? ' on' : ''}" data-ed="${e}">${e}</button>`).join('')}`;
+  nav.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.p) turn(+b.dataset.p); if (b.dataset.go) { BOOK_PAGE = +b.dataset.go; renderBook(); scrollTo(0, 0); } if (b.dataset.ed) { BOOK_ED = +b.dataset.ed; BOOK = bookPages(RU(BOOK_ED)); BOOK_PAGE = Math.min(BOOK_PAGE, BOOK.length - 1); renderBook(); } };
+  const p = BOOK[BOOK_PAGE];
+  $('mbody').innerHTML = `<div class="page"><div class="phead"><span>PX-7 käsiraamat · väljaanne ${BOOK_ED}</span><span>lk ${BOOK_PAGE + 1}</span></div>${p.html}<div class="pfoot">${BOOK_PAGE > 0 ? '<button class="pg" data-p="-1">◀ Eelmine</button>' : '<span></span>'}${BOOK_PAGE < BOOK.length - 1 ? '<button class="pg" data-p="1">Järgmine ▶</button>' : ''}</div></div><div style="height:30px"></div>`;
+  $('mbody').onclick = e => { const b = e.target.closest('button[data-p]'); if (b) turn(+b.dataset.p); };
+  p.after && p.after();
+}
+const PART = { punane: 'punast', sinine: 'sinist', kollane: 'kollast', valge: 'valget', must: 'musta', roheline: 'rohelist' };
+const PLP = { punane: 'punaseid', sinine: 'siniseid', kollane: 'kollaseid', valge: 'valgeid', must: 'musti', roheline: 'rohelisi' };
+const fluff = t => `<p class="fluff">${t}</p>`;
+const spec = rows => `<table class="spec">${rows.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>`;
+function bookPages(R) {
+  const w = R.w, b = R.b, s = R.s, k = R.k, ACT = { hold: '<b>hoia all</b>', tap: '<b>vajuta ja lase kohe lahti</b>' };
+  const sw = (L) => L.map(x => x ? 'ÜLES' : 'ALLA').join(' – ');
+  const pages = [];
+  const P = (title, html, after) => pages.push({ title, html, after });
+  P('Kaas', `<div style="text-align:center;padding:30px 0"><div style="font-size:15px;letter-spacing:.3em">KONFIDENTSIAALNE</div><h1 style="font-size:40px;margin:16px 0">PX-7 SEADME<br>HOOLDUS- JA LAHTIMUUKIMISJUHEND</h1><div style="font-size:22px">Väljaanne ${R.ed}</div><div style="font-size:70px;margin:20px">💣</div>
+    ${fluff('Väljaandja: OÜ Pauk & Pojad, tehnilise dokumentatsiooni osakond. Käesolev juhend on mõeldud ainult volitatud personalile. Juhendi kopeerimine, laenutamine ja kasutamine grillisüütena on keelatud.')}
+    <div class="warn">⚠ Enne alustamist küsi pommimehelt, mis <b>väljaande number</b> on pommi peal kirjas, ja vali sama väljaanne lehe ülaosast. Vale väljaande reeglid ei tööta!</div></div>`);
+  const toc = [];
+  P('Sisukord', '');
+  P('Ohutusnõuded', `<h2>1. Üldised ohutusnõuded</h2>${fluff('1.1 Seadmega töötamisel kanna alati kiivrit, kaitseprille ja head tuju.')}${fluff('1.2 Ära söö seadme läheduses kreeka pähkleid. Pähklikoorte krõbin võib häirida pommimehe keskendumist.')}${fluff('1.3 Seadme hoiutemperatuur on +5 kuni +35 °C. Talvel ära jäta seadet auto pagasiruumi.')}${fluff('1.4 Kui seade hakkab laulma, ei ole see tavaliselt märk rikkest. Kui seade laulab valesti, teavita hooldusosakonda.')}${fluff('1.5 Kõik selle peatüki punktid on soovituslikud ega mõjuta lahtimuukimist.')}
+    <h3>1.6 Kasulikud sõnad</h3>${fluff('Pommimees – inimene, kes hoiab pommi. Juhendaja – inimene, kes hoiab seda raamatut. Moodul – pommi üks ruut, millel on oma ülesanne.')}`);
+  P('Pommi küljed', `<h2>2. Pommi küljed</h2><p>Paljud reeglid vajavad infot pommi külgedelt. Pommimees peab pommi keerama ja vaatama:</p>
+    <ul><li><b>Seerianumber</b> – pommi pealmisel küljel, nt <code>KR4-79B</code>. "Viimane number" tähendab seerianumbri viimast numbrit (tähti ei arvestata).</li>
+    <li><b>Juhendi väljaanne</b> – samuti pommi pealmisel küljel (nt "JUHEND v2").</li>
+    <li><b>Patareid</b> – pommi vasakul küljel. Loe kokku, mitu patareid on.</li>
+    <li><b>Indikaator</b> – pommi paremal küljel: kolmetäheline silt (nt MAA) ja lamp, mis põleb või ei põle.</li></ul>
+    <p>Täishäälikud on A, E, I, O, U. Iga moodul on valmis, kui selle nurgas süttib <b>roheline tuli</b>. Igal veal on oma ✕. Kui vigu tuleb liiga palju, pomm plahvatab. Ekspert-pommil võivad moodulid olla ka <b>tagaküljel</b>.</p>
+    ${fluff('Märkus: patareid on tüüpi AA ja neid ei tohi asendada kartulitega, kuigi kartulist on ka voolu saadud.')}`);
+  P('Juhtmed', `<h2>3. Moodul: Juhtmed</h2>${spec([['Mudel', 'JM-6'], ['Juhtmete pikkus', '9 cm'], ['Isolatsioon', 'kuumakindel kuni 120 °C']])}
+    <p>Moodulil on 3–6 värvilist juhet. Lõigata tuleb <b>täpselt üks</b> juhe. Juhtmeid loetakse <b>ülevalt alla</b>. Kasuta <b>esimest reeglit, mis sobib</b>.</p>
+    <h3>3 juhet</h3><ol><li>Kui esimene juhe on ${w.c3}, lõika ${ORDN[w.d3]}.</li><li>Kui kaks juhet on sama värvi, lõika see juhe, mis on teist värvi.</li><li>Muidu lõika ${ORDN[w.def3]}.</li></ol>
+    <h3>4 juhet</h3><ol><li>Kui seerianumbri viimane number on ${w.par4 ? 'paaritu (1, 3, 5, 7, 9)' : 'paarisarv (0, 2, 4, 6, 8)'}, lõika ${ORDN[w.d4p]}.</li><li>Kui ${PLP[w.c4a]} juhtmeid on rohkem kui ${PLP[w.c4b]}, lõika viimane ${w.c4a}.</li><li>Kui ${PART[w.c4n]} juhet pole, lõika ${ORDN[w.d4n]}.</li><li>Muidu lõika ${ORDN[w.def4]}.</li></ol>
+    ${fluff('Ajalooline märkus: varasemates mudelites oli juhtmeid kuni 14, kuid kasutajad läksid segadusse.')}
+    <h3>5 juhet</h3><ol><li>Kui viimane (viies) juhe on ${w.c5l}, lõika ${ORDN[w.d5l]}.</li><li>Kui patareisid on ${w.bat5} või rohkem ja on ${w.c5w} juhe, lõika esimene ${w.c5w}.</li><li>Muidu lõika ${ORDN[w.def5]}.</li></ol>
+    <h3>6 juhet</h3><ol><li>Kui ${PART[w.c6n]} juhet pole, lõika ${ORDN[w.d6n]}.</li><li>Kui on täpselt üks ${w.c6o} juhe, lõika see.</li><li>Kui seerianumbris on täishäälik, lõika esimene.</li><li>Muidu lõika ${ORDN[w.def6]}.</li></ol>`);
+  P('Nupp', `<h2>4. Moodul: Nupp</h2>${fluff('Nupu vedru on testitud 2 000 000 vajutusega. Nupu kiri on trükitud kulumiskindla värviga.')}
+    <p>Moodulil on suur värviline nupp, millel on kiri. Kasuta <b>esimest reeglit, mis sobib</b>:</p>
+    <ol><li>Kui nupp on ${b.c1} ja kiri on <b>${b.l1}</b> → ${ACT[b.a1]}.</li><li>Kui patareisid on rohkem kui ${b.batT} → ${ACT.tap}.</li><li>Kui nupp on ${b.c2} → ${ACT[b.a2]}.</li><li>Kui kiri on <b>${b.l2}</b> → ${ACT[b.a3]}.</li><li>Muidu → ${ACT[b.def]}.</li></ol>
+    <h3>Kui nuppu tuleb all hoida</h3><p>Nupu kõrval süttib värviline riba. Lase nupp lahti, kui <b>taimeri viimane number</b> on:</p>
+    <table><tr><th>Riba</th><th>Viimane number</th></tr>${Object.entries(b.strip).map(([c, d]) => `<tr><td>${c}</td><td>${d}</td></tr>`).join('')}</table>
+    ${fluff('Kui nuppu hoida üle 30 minuti, võib tekkida pöidla väsimus.')}`);
+  P('Lülitid', `<h2>5. Moodul: Lülitid</h2><p>Üleval on 5 lampi, all 5 lülitit. Lülitid loetakse <b>vasakult paremale</b>. Pane lülitid paika ja vajuta <b>VALMIS</b>.</p>
+    <table><tr><th>Mitu lampi põleb?</th><th>Lülitid</th></tr>
+    <tr><td>0 või 5</td><td>kõik <b>${s.all ? 'ÜLES' : 'ALLA'}</b></td></tr>
+    <tr><td>1</td><td>põleva lambi all <b>${s.one ? 'ALLA' : 'ÜLES'}</b>, teised <b>${s.one ? 'ÜLES' : 'ALLA'}</b></td></tr>
+    <tr><td>2</td><td>põlevate lampide all <b>${s.two ? 'ÜLES' : 'ALLA'}</b>, teised <b>${s.two ? 'ALLA' : 'ÜLES'}</b></td></tr>
+    <tr><td>3, esimene põleb</td><td>${sw(s.p3a)}</td></tr><tr><td>3, esimene ei põle</td><td>${sw(s.p3b)}</td></tr>
+    <tr><td>4</td><td>kustunud lambi all <b>${s.four ? 'ALLA' : 'ÜLES'}</b>, teised <b>${s.four ? 'ÜLES' : 'ALLA'}</b></td></tr></table>
+    ${fluff('Lambid on LED-tüüpi, eluiga umbes 50 000 tundi. Lampe ei pea vahetama.')}`);
+  P('Tehnilised andmed', `<h2>6. Tehnilised andmed</h2>${spec([['Kaal', '4,2 kg'], ['Mõõdud', '46 × 32 × 14 cm'], ['Toide', 'AA patareid või vooluvõrk 230 V'], ['Taimeri täpsus', '±0,01 s'], ['Värvus', 'tumehall'], ['Garantii', '0 kuud'], ['Lemmikloom', 'kass']])}${fluff('Kõik selle lehe andmed on informatiivsed. Lahtimuukimiseks pole neid vaja.')}`);
+  const ws = Object.entries(k.codes);
+  P('Koodilukk', `<h2>7. Moodul: Koodilukk</h2><p>Ekraanil on loomanimi. Leia nimi tabelist ja ütle 4-kohaline kood.</p>
+    <div class="warn">Kui pommi indikaatori silt on <b>${k.ind}</b> ja selle lamp <b>${k.lit ? 'põleb' : 'EI põle'}</b>, tuleb kood sisestada <b>tagurpidi</b>.</div>
+    <table><tr><th>Sõna</th><th>Kood</th><th>Sõna</th><th>Kood</th></tr>${ws.slice(0, 6).map(([x, c], i) => `<tr><td>${x}</td><td><b>${c}</b></td><td>${ws[i + 6][0]}</td><td><b>${ws[i + 6][1]}</b></td></tr>`).join('')}</table>
+    <p>Klahv <b>C</b> kustutab. Vale kood on viga.</p>${fluff('Loomanimed valiti Eesti metsade ja koduste loomade hulgast. Ükski loom ei saanud selle juhendi koostamisel viga.')}`);
+  P('Labürint', `<h2>8. Moodul: Labürint</h2><p>Moodulil on 5×5 täppidega ekraan ja 4 noolt. <b>Roheline ring</b> on pommimees, <b>punane rist</b> on siht. Pommimees <b>ei näe seinu</b>! Raami värv ütleb, milline labürint see on. Vastu seina minek on viga.</p>
+    <div class="mazes">${MCOL.map((c, i) => `<div><canvas id="mz${i}" width="170" height="170"></canvas><br>${c}</div>`).join('')}</div>`, () => MCOL.forEach((c, i) => drawMazeManual($('mz' + i), R.mz[i], MHEX[c])));
+  P('Hooldus', `<h2>9. Hooldus ja hoiustamine</h2>${fluff('9.1 Puhasta pommi korpust kord kuus pehme lapiga. Ära kasuta kraanikausipuhastit.')}${fluff('9.2 Hoia pommi kuivas kohas, eemal lastest, lemmikloomadest ja ämmadest.')}${fluff('9.3 Kui pommi taimer näitab 88:88, on see lihtsalt ekraani test.')}${fluff('9.4 Seade ei ole mõeldud kasutamiseks vannis.')}${fluff('9.5 Kui tunned pommist tugevat sibulalõhna, on keegi seal lõunat söönud.')}`);
+  P('Värvimälu', `<h2>10. Moodul: Värvimälu</h2><p>Moodulil on 4 värvilist nuppu. Nupud <b>vilguvad</b> järjest. Iga vilkunud värvi asemel tuleb vajutada <b>teist värvi</b> nuppu – vaata tabelist. Vajuta kõik vastused samas järjekorras, nagu nupud vilkusid. Iga vooru järel lisandub üks vilge. Kui kõik vooru tuled (ülal) põlevad roheliselt, on moodul valmis.</p>
+    <table><tr><th>Patareisid</th>${PCOL.map(c => `<th>vilgub ${c}</th>`).join('')}</tr>${['0–1', '2–3', '4'].map((t, i) => `<tr><td>${t}</td>${R.p[i].map(c => `<td><b>${c}</b></td>`).join('')}</tr>`).join('')}</table>
+    ${fluff('Värvid on valitud nii, et need oleksid hästi eristatavad ka hämaras ruumis.')}`);
+  P('Raadio', `<h2>11. Moodul: Raadio</h2><p>Moodulil vilgub lamp <b>morsekoodis</b> üht sõna, uuesti ja uuesti. Lühike vilge on <b>punkt</b> (·), pikk vilge on <b>kriips</b> (–). Pikem paus on tähtede vahel, väga pikk paus tähendab, et sõna algab otsast.</p>
+    <p>Leia sõna ja ütle sagedus. Pommimees valib nooltega sageduse ja vajutab <b>SAADA</b>.</p>
+    <table><tr><th>Sõna</th><th>Sagedus</th><th>Sõna</th><th>Sagedus</th></tr>${MW.slice(0, 6).map((x, i) => `<tr><td>${x}</td><td><b>${R.f[i]} MHz</b></td><td>${MW[i + 6]}</td><td><b>${R.f[i + 6]} MHz</b></td></tr>`).join('')}</table>
+    <h3>Morse tähestik</h3><table class="morse">${Object.entries(MORSE).map(([L, c], i) => (i % 4 === 0 ? '<tr>' : '') + `<td><b>${L}</b></td><td style="font-family:monospace;font-size:22px">${c.replace(/\./g, '·').replace(/-/g, '–')}</td>` + (i % 4 === 3 ? '</tr>' : '')).join('')}</table>
+    ${fluff('Raadio töötab ka ilma antennita. Kohalikku raadiojaama see vastu ei võta.')}`);
+  P('Sümbolid', `<h2>12. Moodul: Sümbolid</h2><p>Moodulil on 4 nuppu imelike märkidega. Allpool on 6 tulpa. <b>Ainult ühes tulbas</b> on kõik 4 märki. Vajuta nupud selles järjekorras, nagu need selles tulbas <b>ülevalt alla</b> on.</p>
+    <div class="symcols">${R.cols.map((c, i) => `<div><b>Tulp ${i + 1}</b>${c.map(id => `<canvas data-g="${id}" width="64" height="64"></canvas>`).join('')}</div>`).join('')}</div>
+    ${fluff('Märgid on pärit muistsest kalendrist, mille täpne tähendus on teadmata. Võimalik, et need on ostunimekiri.')}`, () => document.querySelectorAll('canvas[data-g]').forEach(c => drawGlyph(c.getContext('2d'), +c.dataset.g, 32, 32, 50, '#2a241a')));
+  const MT = { pos: v => `vajuta nuppu <b>kohal ${v}</b> (vasakult)`, lab: v => `vajuta nuppu, millel on number <b>${v}</b>`, ppos: v => `vajuta nuppu <b>samal kohal</b>, mis etapil ${v}`, plab: v => `vajuta nuppu <b>sama numbriga</b>, mis etapil ${v}` };
+  P('Mälu', `<h2>13. Moodul: Mälu</h2><p>Moodulil on ekraan ühe numbriga (1–4) ja 4 nuppu numbritega. Moodulil on <b>4 etappi</b> (paremal 4 tulukest). Igal etapil vaata ekraani numbrit ja tee, mida tabel ütleb. <b>Pea meeles</b>, mida igal etapil vajutati (koht ja number) – hiljem võib seda vaja minna! Vale vajutus = viga ja moodul algab otsast.</p>
+    ${[0, 1, 2, 3].map(st => `<h3>Etapp ${st + 1}</h3><ul>${R.m[st].map((x, d) => `<li>Ekraanil <b>${d + 1}</b> → ${MT[x.t](x.v)}.</li>`).join('')}</ul>`).join('')}`);
+  P('Juhtmejada', `<h2>14. Moodul: Juhtmejada</h2><p>Moodulil on 3 lehte juhtmeid. Iga juhe läheb vasakult numbrilt paremale tähele (A, B või C). Lõika juhe ainult siis, kui selle sihttäht on tabelis. Loe, mitmes <b>sama värvi</b> juhe see on – loendus jätkub järgmistel lehtedel! Kui leht on tehtud, vajuta <b>▼</b>. Kui jätad lõikamata juhtme, mis oleks pidanud lõigatud olema, on see viga.</p>
+    <table><tr><th>Mitmes</th>${QCOL.map(c => `<th>${c}</th>`).join('')}</tr>${[...Array(9)].map((_, i) => `<tr><td>${i + 1}.</td>${QCOL.map(c => `<td>${R.q[c][i].join(' või ')}</td>`).join('')}</tr>`).join('')}</table>`);
+  P('KKK', `<h2>15. Korduma kippuvad küsimused</h2>${fluff('<b>K: Kas pommi saab välja lülitada?</b><br>V: Jah, lahtimuukimise teel.')}${fluff('<b>K: Mis juhtub, kui taimer jõuab nulli?</b><br>V: Seda on parem mitte teada.')}${fluff('<b>K: Kas juhendit saab lugeda tagant ettepoole?</b><br>V: Saab, aga see ei muuda midagi.')}${fluff('<b>K: Miks on juhendis nii palju lehti?</b><br>V: Juhend on koostatud põhjalikult.')}`);
+  P('Garantii', `<h2>16. Garantiitingimused</h2>${fluff('Tootja ei vastuta kahjude eest, mis tekivad seadme plahvatamisel, kukkumisel, valel kasutamisel ega liiga hilisel lahtimuukimisel. Garantii ei kehti, kui seade on plahvatanud. Garantii ei kehti ka siis, kui seade ei ole plahvatanud. Pretensioonid palume esitada kirjalikult 3 päeva jooksul pärast plahvatust.')}<h3>Märkmed</h3><div class="lines"></div>`);
+  pages[1].html = `<h2>Sisukord</h2><table class="toc">${pages.map((p, i) => `<tr><td style="text-align:left">${p.title}</td><td>${i + 1}</td></tr>`).join('')}</table>${fluff('Sisukord on koostatud tähestikulises järjekorras kõige tähtsamate peatükkide järgi.')}`;
+  return pages;
 }
 function drawMazeManual(cv, mz, col) {
   const g = cv.getContext('2d'), S = 170, pad = 14, cs = (S - pad * 2) / MN;
   g.fillStyle = '#fff'; g.fillRect(0, 0, S, S); g.strokeStyle = col; g.lineWidth = 10; g.strokeRect(5, 5, S - 10, S - 10);
   g.fillStyle = '#999'; for (let y = 0; y < MN; y++) for (let x = 0; x < MN; x++) { g.beginPath(); g.arc(pad + cs * (x + 0.5), pad + cs * (y + 0.5), 3, 0, PI * 2); g.fill(); }
-  g.strokeStyle = '#111'; g.lineWidth = 4; g.lineCap = 'round';
-  g.strokeRect(pad, pad, cs * MN, cs * MN);
+  g.strokeStyle = '#111'; g.lineWidth = 4; g.lineCap = 'round'; g.strokeRect(pad, pad, cs * MN, cs * MN);
   for (let y = 0; y < MN; y++) for (let x = 0; x < MN; x++) {
     if (x < MN - 1 && mz.E[y][x]) { g.beginPath(); g.moveTo(pad + cs * (x + 1), pad + cs * y); g.lineTo(pad + cs * (x + 1), pad + cs * (y + 1)); g.stroke(); }
     if (y < MN - 1 && mz.S[y][x]) { g.beginPath(); g.moveTo(pad + cs * x, pad + cs * (y + 1)); g.lineTo(pad + cs * (x + 1), pad + cs * (y + 1)); g.stroke(); }
   }
 }
-
 
 /* ============ PILTIDEGA JUHEND (lastele) ============ */
 let E = {}, K = {}, LIVE = null, liveSig = '';
@@ -505,7 +605,11 @@ function startBomb(forced) {
     indexAt(uv) { const x = uv.x * this.W, y = (1 - uv.y) * this.H; return this.buttons.findIndex(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h); }
     click(uv) { const i = this.indexAt(uv); if (i >= 0) { sfx.click(); this.buttons[i].fn(); this.last = ''; this.refresh(); } }
   }
-  const DIFF = { kid: { n: 2, time: 480, name: 'Väike 👶', sub: 'lastele · 8:00' }, easy: { n: 3, time: 300, name: 'Lihtne', sub: '3 moodulit · 5:00' }, mid: { n: 4, time: 240, name: 'Keskmine', sub: '4 moodulit · 4:00' }, hard: { n: 5, time: 210, name: 'Raske', sub: '5 moodulit · 3:30' } };
+  const DIFF = { kid: { n: 2, time: 480, name: 'Väike 👶', sub: 'lastele · 8:00' }, expert: null, easy: { n: 3, time: 300, name: 'Lihtne', sub: '3 moodulit · 5:00' }, mid: { n: 4, time: 240, name: 'Keskmine', sub: '4 moodulit · 4:00' }, hard: { n: 5, time: 210, name: 'Raske', sub: '5 moodulit · 3:30' } };
+  delete DIFF.expert; DIFF.expert = { n: 10, time: 360, name: 'Ekspert 💀', sub: '6:00 · 1 viga' };
+  const TOPK = 'pomm_top';
+  const getTop = d => { try { return (JSON.parse(localStorage.getItem(TOPK) || '{}')[d] || []); } catch (e) { return []; } };
+  const addTop = (d, t, s) => { try { const all = JSON.parse(localStorage.getItem(TOPK) || '{}'); const L = all[d] || []; L.push({ t: Math.floor(t), s, d: new Date().toLocaleDateString('et') }); L.sort((a, b) => b.t - a.t || a.s - b.s); all[d] = L.slice(0, 5); localStorage.setItem(TOPK, JSON.stringify(all)); return all[d][0].t === Math.floor(t) && all[d][0].s === s; } catch (e) { return false; } };
   const G = { phase: 'lobby', diff: 'easy', time: 0, strikes: 0, maxS: 3, mods: [], B: null, endAt: 0 };
   const manualOn = () => performance.now() - lastHi < 5000;
   const menu = new Panel(0.8, 0.62, 1000, 780, (g, P) => {
@@ -523,8 +627,9 @@ function startBomb(forced) {
       for (let i = 0; i < 3; i++) { const a = G.clock * 3 + i * 2.1; g.fillStyle = '#f2c230'; g.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(a)); g.beginPath(); g.arc(P.W / 2 - 50 + i * 50, 610, 14, 0, PI * 2); g.fill(); } g.globalAlpha = 1;
       P.btn(300, 660, 400, 80, 'Mängi üksi', () => { G.solo = true; }, { col: '#666', fs: 30 });
     } else if (G.phase === 'lobby') {
-      Object.entries(DIFF).forEach(([k, d], i) => P.btn(40 + i * 232, 330, 220, 130, d.name, () => { G.diff = k; }, { on: G.diff === k, sub: d.sub, fs: 36 }));
-      P.btn(40, 500, 920, 170, 'ALUSTA', startGame, { fs: 80, col: '#e5483b' });
+      Object.entries(DIFF).forEach(([k, d], i) => P.btn(30 + i * 190, 330, 180, 130, d.name, () => { G.diff = k; }, { on: G.diff === k, sub: d.sub, fs: 30, col: k === 'expert' ? '#e5483b' : undefined }));
+      const tp = getTop(G.diff); if (tp.length) txt(g, `🏆 Parim (${DIFF[G.diff].name}): ${fmt(tp[0].t)} jäi aega`, P.W / 2, 482, 28, '#f2c230');
+      P.btn(40, 510, 920, 160, 'ALUSTA', startGame, { fs: 80, col: '#e5483b' });
       txt(g, on ? 'Kõik on valmis – vali raskus ja alusta!' : 'Mängid üksi (juhendajat pole)', P.W / 2, 720, 28, on ? '#3fbf6a' : '#888');
     } else if (G.phase === 'play') {
       txt(g, `Moodulid: ${G.mods.filter(m => m.solved).length}/${G.mods.length}   Vead: ${G.strikes}/${G.maxS}`, P.W / 2, 380, 44, '#fff');
@@ -532,8 +637,10 @@ function startBomb(forced) {
       P.btn(300, 560, 400, 110, 'Loobu', () => explode(), { col: '#666', fs: 36 });
     } else {
       const win = G.phase === 'win'; txt(g, win ? '✅ POMM KAHJUTU!' : '💥 PAUH!', P.W / 2, 400, 90, win ? '#3fbf6a' : '#e5483b');
-      txt(g, win ? `Aega jäi: ${fmt(G.time)} · vigu: ${G.strikes}` : 'Pomm plahvatas. Proovi uuesti!', P.W / 2, 480, 36, '#fff');
-      P.btn(200, 560, 600, 140, 'UUS POMM', () => { G.phase = 'lobby'; clearBomb(); placeMenu(); sendState(); }, { fs: 60, col: '#3fbf6a' });
+      txt(g, win ? `Aega jäi: ${fmt(G.time)} · vigu: ${G.strikes}` : 'Pomm plahvatas. Proovi uuesti!', P.W / 2, 470, 36, '#fff');
+      if (win && G.record) txt(g, '🏆 UUS REKORD!', P.W / 2, 520, 40, '#f2c230');
+      const tp = getTop(G.diff).slice(0, 3); if (tp.length) txt(g, '🏆 ' + tp.map((x, i) => `${i + 1}. ${fmt(x.t)}`).join('   '), P.W / 2, 730, 30, '#f2c230');
+      P.btn(200, 560, 600, 130, 'UUS POMM', () => { G.phase = 'lobby'; clearBomb(); placeMenu(); sendState(); }, { fs: 60, col: '#3fbf6a' });
     }
   });
   scene.add(menu.mesh);
@@ -573,7 +680,7 @@ function startBomb(forced) {
   }
   // --- moodul: nupp
   function modButton(B) {
-    const b = base(); const col = pick(BCOL), lab = pick(BLAB);
+    const b = base(); const SB = RU(B.ed).b.strip; const col = pick(BCOL), lab = pick(BLAB);
     const m = { id: 'nupp', ...b, col, lab, act: buttonAction(col, lab, B), solved: false, held: false, t0: 0, strip: null };
     const ring = mesh(new THREE.CylinderGeometry(0.043, 0.043, 0.008, 32).rotateX(PI / 2), M('#1a1c20', { metalness: 0.5 }), -0.01, 0, 0.004, b.g);
     const cap = new THREE.Group(); cap.position.set(-0.01, 0, 0.008); b.g.add(cap);
@@ -588,14 +695,14 @@ function startBomb(forced) {
       if (m.solved) return;
       if (m.act === 'tap') { if (dur < 0.5) solve(m); else strike(m); return; }
       if (dur < 0.5 || !strip) { strike(m); return; }
-      if (Math.floor(G.time) % 10 === STRIP[strip]) solve(m); else strike(m); };
-    m.update = () => { if (m.held && !m.strip && G.clock - m.t0 > 0.5) { m.strip = pick(Object.keys(STRIP)); const hx = { punane: '#ff2a1a', kollane: '#ffd020', sinine: '#2a6aff', roheline: '#20e050' }[m.strip]; stripM.color.set(hx); stripM.emissive.set(hx); } };
+      if (Math.floor(G.time) % 10 === SB[strip]) solve(m); else strike(m); };
+    m.update = () => { if (m.held && !m.strip && G.clock - m.t0 > 0.5) { m.strip = pick(Object.keys(SB)); const hx = { punane: '#ff2a1a', kollane: '#ffd020', sinine: '#2a6aff', roheline: '#20e050' }[m.strip]; stripM.color.set(hx); stripM.emissive.set(hx); } };
     return m;
   }
   // --- moodul: lülitid
-  function modSwitches() {
+  function modSwitches(B) {
     const b = base(); let lamps; do { lamps = Array.from({ length: 5 }, () => Math.random() < 0.5); } while (false);
-    const target = switchTarget(lamps); let pos; do { pos = Array.from({ length: 5 }, () => rint(2)); } while (pos.join() === target.join());
+    const target = switchTarget(lamps, RU(B.ed)); let pos; do { pos = Array.from({ length: 5 }, () => rint(2)); } while (pos.join() === target.join());
     const m = { id: 'lulitid', ...b, lamps, target, pos, solved: false, levers: [] };
     for (let i = 0; i < 5; i++) { const x = -0.044 + i * 0.022;
       mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.004, 14).rotateX(PI / 2), M('#111'), x, 0.038, 0.002, b.g);
@@ -624,8 +731,8 @@ function startBomb(forced) {
     return m;
   }
   // --- moodul: labürint
-  function modMaze() {
-    const b = base(); const mi = rint(6); const mz = MAZES[mi]; let p, g2; do { p = [rint(MN), rint(MN)]; g2 = [rint(MN), rint(MN)]; } while (Math.abs(p[0] - g2[0]) + Math.abs(p[1] - g2[1]) < 4);
+  function modMaze(B) {
+    const b = base(); const mi = rint(6); const mz = RU(B.ed).mz[mi]; let p, g2; do { p = [rint(MN), rint(MN)]; g2 = [rint(MN), rint(MN)]; } while (Math.abs(p[0] - g2[0]) + Math.abs(p[1] - g2[1]) < 4);
     const m = { id: 'lab', ...b, mi, mz, p, goal: g2, solved: false };
     const scr = canvasPlane(0.074, 0.074, 300, 300, (g, W, H) => { g.fillStyle = '#0a0c10'; g.fillRect(0, 0, W, H); g.strokeStyle = MHEX[MCOL[mi]]; g.lineWidth = 18; g.strokeRect(9, 9, W - 18, H - 18); const pad = 34, cs = (W - pad * 2) / MN;
       for (let y = 0; y < MN; y++) for (let x = 0; x < MN; x++) { g.fillStyle = '#556'; g.beginPath(); g.arc(pad + cs * (x + 0.5), pad + cs * (y + 0.5), 5, 0, PI * 2); g.fill(); }
@@ -638,6 +745,81 @@ function startBomb(forced) {
   }
   // --- taimer
   let timerScr, strikeScr;
+  // --- moodul: värvimälu
+  function modSimon(B) {
+    const b = base(); const R = RU(B.ed), N = G.diff === 'expert' ? 4 : 3; const seq = Array.from({ length: N }, () => pick(PCOL));
+    const m = { id: 'varv', ...b, seq, stage: 1, idx: 0, solved: false, t: 0, pause: 0, pads: {} };
+    const pos = { punane: [0, 0.03], sinine: [0.03, 0], roheline: [0, -0.03], kollane: [-0.03, 0] };
+    for (const c of PCOL) { const mat = new THREE.MeshStandardMaterial({ color: PHEX[c], emissive: '#000', roughness: 0.35 }); const pd = mesh(new THREE.BoxGeometry(0.03, 0.03, 0.01), mat, pos[c][0], pos[c][1] - 0.01, 0.005, b.g); pd.rotation.z = PI / 4; hit(pd, m, c); m.pads[c] = mat; }
+    const lights = [...Array(N)].map((_, i) => mesh(new THREE.SphereGeometry(0.004, 8, 6), new THREE.MeshStandardMaterial({ color: '#222', emissive: '#000' }), -0.045 + i * 0.012, 0.052, 0.003, b.g));
+    const lit = (c, on) => { m.pads[c].emissive.set(on ? PHEX[c] : '#000'); m.pads[c].emissiveIntensity = on ? 1.6 : 0; };
+    const syncL = () => lights.forEach((l, i) => { const on = i < m.stage - 1 || m.solved; l.material.color.set(on ? '#20ff60' : '#222'); l.material.emissive.set(on ? '#20ff60' : '#000'); });
+    m.update = dt => { if (m.solved) return; if (m.pause > 0) { m.pause -= dt; if (m.press > 0) { m.press -= dt; if (m.press <= 0) PCOL.forEach(c => lit(c, false)); } return; }
+      m.t += dt; const per = 0.7, cyc = m.stage * per + 2.2; const tt = m.t % cyc; const k = Math.floor(tt / per); PCOL.forEach(c => lit(c, false));
+      if (k < m.stage && tt % per < 0.45) { lit(m.seq[k], true); if (!m.beeped || m.beeped !== Math.floor(m.t / per)) { m.beeped = Math.floor(m.t / per); tone(440 + PCOL.indexOf(m.seq[k]) * 110, 440 + PCOL.indexOf(m.seq[k]) * 110, 0.2, 'sine', 0.06); } } };
+    m.down = c => { if (m.solved) return; PCOL.forEach(x => lit(x, false)); lit(c, true); m.press = 0.25; m.pause = 3; m.t = 0; tone(440 + PCOL.indexOf(c) * 110, 440 + PCOL.indexOf(c) * 110, 0.15, 'square', 0.05);
+      const need = R.p[batRow(B.batteries)][PCOL.indexOf(m.seq[m.idx])];
+      if (c !== need) { m.idx = 0; strike(m); return; } m.idx++; if (m.idx >= m.stage) { m.idx = 0; m.stage++; m.pause = 1.2; syncL(); if (m.stage > N) { solve(m); syncL(); } } };
+    syncL(); return m;
+  }
+  // --- moodul: raadio (morse)
+  function modMorse(B) {
+    const b = base(); const R = RU(B.ed); const word = pick(MW); const ans = R.f[MW.indexOf(word)]; const freqs = FREQS.slice().sort();
+    const m = { id: 'raadio', ...b, word, ans, i: rint(freqs.length), solved: false, t: 0 };
+    const u = 0.22, tl = []; for (const L of word) { for (const sym of MORSE[L]) { tl.push([1, sym === '.' ? u : 3 * u]); tl.push([0, u]); } tl[tl.length - 1][1] = 3 * u; } tl[tl.length - 1][1] = 7 * u; const total = tl.reduce((a, x) => a + x[1], 0);
+    const lampM = new THREE.MeshStandardMaterial({ color: '#4a3a10', emissive: '#000', roughness: 0.3 }); mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.004, 14).rotateX(PI / 2), M('#111'), -0.035, 0.038, 0.002, b.g); mesh(new THREE.SphereGeometry(0.009, 14, 10), lampM, -0.035, 0.038, 0.004, b.g);
+    canvasPlane(0.05, 0.012, 200, 48, (g, W, H) => txt(g, 'RAADIO', W / 2, H / 2, 34, '#ccc'), b.g, 0.018, 0.038, 0.001);
+    mesh(new THREE.BoxGeometry(0.084, 0.026, 0.004), M('#050505'), 0, 0.004, 0.002, b.g);
+    const scr = canvasPlane(0.08, 0.022, 360, 100, (g, W, H) => { g.fillStyle = '#1a0e02'; g.fillRect(0, 0, W, H); txt(g, freqs[m.i] + ' MHz', W / 2, H / 2 + 4, 60, '#ffb040', 'center', true, 'ui-monospace,monospace'); }, b.g, 0, 0.004, 0.0045);
+    for (const [d, x, rot] of [[-1, -0.03, PI / 2], [1, 0.03, -PI / 2]]) { const a = mesh(new THREE.ConeGeometry(0.008, 0.013, 3).rotateZ(rot), M('#d8d8d0'), x, -0.022, 0.005, b.g); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.02, 0.015), new THREE.MeshBasicMaterial({ visible: false })); hb.position.set(x, -0.022, 0.006); b.g.add(hb); hit(hb, m, d); hit(a, m, d); }
+    const tx = mesh(new THREE.BoxGeometry(0.05, 0.016, 0.008), M('#8a2a20'), 0, -0.046, 0.004, b.g); const txl = canvasPlane(0.048, 0.014, 200, 56, (g, W, H) => txt(g, 'SAADA', W / 2, H / 2, 38, '#fff'), b.g, 0, -0.046, 0.0085); hit(tx, m, 'tx'); hit(txl, m, 'tx');
+    m.update = dt => { if (m.solved) { lampM.emissive.set('#000'); return; } m.t = (m.t + dt) % total; let a = 0, on = 0; for (const [o, d] of tl) { if (m.t < a + d) { on = o; break; } a += d; } lampM.emissive.set(on ? '#ffd040' : '#000'); lampM.emissiveIntensity = on ? 3 : 0; };
+    m.down = p => { if (m.solved) return; sfx.click(); if (p === 'tx') { if (freqs[m.i] === m.ans) solve(m); else strike(m); return; } m.i = clamp(m.i + p, 0, freqs.length - 1); scr.redraw(); };
+    return m;
+  }
+  // --- moodul: sümbolid
+  function modSymbols(B) {
+    const b = base(); const R = RU(B.ed); let col, four;
+    for (let t = 0; t < 500; t++) { col = rint(6); four = R.cols[col].slice().sort(() => Math.random() - 0.5).slice(0, 4); if (R.cols.filter((c, i) => i !== col && four.every(x => c.includes(x))).length === 0) break; }
+    const order = R.cols[col].filter(x => four.includes(x)); const m = { id: 'sym', ...b, order, done: 0, solved: false, leds: {} };
+    four.forEach((id, i) => { const x = (i % 2 ? 1 : -1) * 0.026, y = (i < 2 ? 1 : -1) * 0.025 - 0.005;
+      const key = mesh(new THREE.BoxGeometry(0.044, 0.04, 0.007), M('#e8e2d0', { roughness: 0.6 }), x, y, 0.0035, b.g);
+      const gl = canvasPlane(0.036, 0.036, 128, 128, (g, W, H) => drawGlyph(g, id, W / 2, H / 2 + 6, 90, '#1a1a1a'), b.g, x, y - 0.002, 0.0072); hit(key, m, id); hit(gl, m, id);
+      m.leds[id] = mesh(new THREE.BoxGeometry(0.012, 0.003, 0.003), new THREE.MeshStandardMaterial({ color: '#222', emissive: '#000' }), x, y + 0.016, 0.0075, b.g); m['k' + id] = key; });
+    m.down = id => { if (m.solved || m.leds[id].userData.ok) return; const k = m['k' + id]; k.position.z = 0.0015; setTimeout(() => k.position.z = 0.0035, 120); sfx.key();
+      if (m.order[m.done] === id) { m.leds[id].userData.ok = 1; m.leds[id].material.color.set('#20ff60'); m.leds[id].material.emissive.set('#20ff60'); m.done++; if (m.done === 4) solve(m); } else strike(m); };
+    return m;
+  }
+  // --- moodul: mälu
+  function modMemory(B) {
+    const b = base(); const R = RU(B.ed); const m = { id: 'mal', ...b, stage: 0, hist: [], solved: false };
+    mesh(new THREE.BoxGeometry(0.06, 0.04, 0.004), M('#050505'), -0.01, 0.026, 0.002, b.g);
+    const scr = canvasPlane(0.056, 0.036, 200, 128, (g, W, H) => { g.fillStyle = '#04140a'; g.fillRect(0, 0, W, H); txt(g, String(m.disp || ''), W / 2, H / 2 + 4, 110, '#40ff80', 'center', true, 'ui-monospace,monospace'); }, b.g, -0.01, 0.026, 0.0045);
+    const st = [0, 1, 2, 3].map(i => mesh(new THREE.BoxGeometry(0.008, 0.006, 0.003), new THREE.MeshStandardMaterial({ color: '#222', emissive: '#000' }), 0.045, 0.04 - i * 0.011, 0.002, b.g));
+    const keys = [0, 1, 2, 3].map(i => { const x = -0.039 + i * 0.026; const k = mesh(new THREE.BoxGeometry(0.022, 0.03, 0.007), M('#d8d8d0'), x, -0.03, 0.0035, b.g); const lab = canvasPlane(0.018, 0.024, 64, 84, (g, W, H, v = '') => txt(g, String(v), W / 2, H / 2 + 3, 64, '#111'), b.g, x, -0.03, 0.0072); hit(k, m, i); hit(lab, m, i); return { k, lab }; });
+    const roll = () => { m.disp = 1 + rint(4); m.labels = [1, 2, 3, 4].sort(() => Math.random() - 0.5); scr.redraw(); keys.forEach((k, i) => k.lab.redraw(m.labels[i])); st.forEach((l, i) => { const on = i < m.stage; l.material.color.set(on ? '#20ff60' : '#222'); l.material.emissive.set(on ? '#20ff60' : '#000'); }); };
+    const expect = () => { const r = R.m[m.stage][m.disp - 1]; if (r.t === 'pos') return r.v - 1; if (r.t === 'lab') return m.labels.indexOf(r.v); if (r.t === 'ppos') return m.hist[r.v - 1].pos; return m.labels.indexOf(m.hist[r.v - 1].lab); };
+    m.down = i => { if (m.solved) return; const k = keys[i].k; k.position.z = 0.0015; setTimeout(() => k.position.z = 0.0035, 120); sfx.key();
+      if (i !== expect()) { m.stage = 0; m.hist = []; strike(m); setTimeout(roll, 400); return; } m.hist.push({ pos: i, lab: m.labels[i] }); m.stage++; if (m.stage >= 4) { m.disp = ''; scr.redraw(); st.forEach(l => { l.material.color.set('#20ff60'); l.material.emissive.set('#20ff60'); }); solve(m); } else setTimeout(roll, 250); };
+    roll(); return m;
+  }
+  // --- moodul: juhtmejada
+  function modSeq(B) {
+    const b = base(); const R = RU(B.ed); const panels = []; const seen = { punane: 0, sinine: 0, must: 0 }; let total = 0;
+    while (total < 4) { panels.length = 0; total = 0; for (const k in seen) seen[k] = 0;
+      for (let p = 0; p < 3; p++) { const n = 1 + rint(3); const froms = [0, 1, 2].sort(() => Math.random() - 0.5).slice(0, n).sort(); panels.push(froms.map(f => { const c = pick(QCOL); seen[c]++; const to = rint(3); return { f, to, c, cut: R.q[c][seen[c] - 1].includes(QLET[to]), done: false }; })); total += n; } }
+    const m = { id: 'jada', ...b, panels, pi: 0, solved: false }; const grp = new THREE.Group(); b.g.add(grp);
+    for (let i = 0; i < 3; i++) { canvasPlane(0.012, 0.012, 48, 48, (g, W, H) => txt(g, String(i + 1), W / 2, H / 2 + 2, 40, '#fff'), b.g, -0.05, 0.035 - i * 0.025, 0.002); canvasPlane(0.012, 0.012, 48, 48, (g, W, H) => txt(g, QLET[i], W / 2, H / 2 + 2, 40, '#fff'), b.g, 0.05, 0.035 - i * 0.025, 0.002); }
+    const pnum = canvasPlane(0.04, 0.012, 160, 48, (g, W, H) => txt(g, `leht ${m.pi + 1}/3`, W / 2, H / 2 + 2, 34, '#ccc'), b.g, -0.025, -0.05, 0.002);
+    const nx = mesh(new THREE.BoxGeometry(0.026, 0.016, 0.008), M('#2a4a8a'), 0.03, -0.05, 0.004, b.g); const nxl = canvasPlane(0.024, 0.014, 96, 56, (g, W, H) => txt(g, '▼', W / 2, H / 2 + 2, 44, '#fff'), b.g, 0.03, -0.05, 0.0085); hit(nx, m, 'next'); hit(nxl, m, 'next');
+    const show = () => { while (grp.children.length) { const c = grp.children.pop(); c.geometry && c.geometry.dispose(); } HITS = HITS.filter(h => h.userData.hit?.mod !== m || typeof h.userData.hit.part !== 'number'); hit(nx, m, 'next'); hit(nxl, m, 'next');
+      (m.panels[m.pi] || []).forEach((w, k) => { const a = new THREE.Vector3(-0.042, 0.035 - w.f * 0.025, 0.008), c = new THREE.Vector3(0.042, 0.035 - w.to * 0.025, 0.008); const mid = a.clone().add(c).multiplyScalar(0.5); mid.z = 0.016; const curve = new THREE.QuadraticBezierCurve3(a, mid, c); const mat = M(WHEX[w.c], { roughness: 0.5, metalness: 0 });
+        if (w.done) { for (const [s0, s1] of [[0, 0.4], [0.6, 1]]) { const pts = []; for (let q = 0; q <= 6; q++) pts.push(curve.getPoint(s0 + (s1 - s0) * q / 6)); mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 8, 0.003, 6), mat, 0, 0, 0, grp); } }
+        else { mesh(new THREE.TubeGeometry(curve, 20, 0.003, 8), mat, 0, 0, 0, grp); const h = new THREE.Mesh(new THREE.TubeGeometry(curve, 10, 0.008, 6), new THREE.MeshBasicMaterial({ visible: false })); grp.add(h); hit(h, m, k); } }); pnum.redraw(); };
+    m.down = p => { if (m.solved) return; if (p === 'next') { sfx.click(); const left = m.panels[m.pi].filter(w => w.cut && !w.done); if (left.length) { left.forEach(w => w.cut = false); strike(m); } m.pi++; if (m.pi >= 3) { solve(m); m.pi = 2; } show(); return; }
+      const w = m.panels[m.pi][p]; if (!w || w.done) return; w.done = true; sfx.snip(); if (!w.cut) strike(m); show(); };
+    show(); return m;
+  }
   function modTimer() { const b = base(); b.led.visible = false;
     mesh(new THREE.BoxGeometry(0.108, 0.05, 0.004), M('#050505'), 0, 0.014, 0.002, b.g);
     timerScr = canvasPlane(0.102, 0.044, 400, 172, (g, W, H, t = 0, mode = '') => { g.fillStyle = '#100404'; g.fillRect(0, 0, W, H); txt(g, '8:88', W / 2, H / 2 + 6, 140, '#2a0a08', 'center', true, 'ui-monospace,monospace'); txt(g, mode || fmt(t), W / 2, H / 2 + 6, mode ? 70 : 140, mode ? '#40ff70' : '#ff3020', 'center', true, 'ui-monospace,monospace'); }, b.g, 0, 0.014, 0.0045);
@@ -648,7 +830,7 @@ function startBomb(forced) {
   function buildBomb() {
     clearBomb(); HITS = [];
     const L = 'ABCDEFGHKLMNPRSTUVZ', D = '0123456789';
-    const B = { serial: pick(L) + pick(L) + pick(D) + '-' + pick(D) + pick(D) + pick(L), batteries: rint(5), indicator: pick(['MAA', 'VAL', 'TUL', 'KAS']), indLit: Math.random() < 0.5 };
+    const X = G.diff === 'expert'; const B = { serial: pick(L) + pick(L) + pick(D) + '-' + pick(D) + pick(D) + pick(L), batteries: rint(5), indicator: pick(['MAA', 'VAL', 'TUL', 'KAS']), indLit: Math.random() < 0.5, ed: X ? 1 + rint(3) : 1 };
     G.B = B;
     bomb = new THREE.Group(); bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); scene.add(bomb);
     const W = 0.46, H = 0.32, Dp = 0.14;
@@ -656,6 +838,7 @@ function startBomb(forced) {
     for (const [w, h, x, y] of [[W + 0.004, 0.014, 0, H / 2 - 0.007], [W + 0.004, 0.014, 0, -H / 2 + 0.007], [0.014, H, W / 2 - 0.007, 0], [0.014, H, -W / 2 + 0.007, 0]]) { const L2 = Math.max(w, h); const tx = HAZ.clone(); tx.needsUpdate = true; tx.repeat.set(L2 / 0.03, 1); const s = mesh(new THREE.BoxGeometry(L2, 0.014, 0.004), new THREE.MeshStandardMaterial({ map: tx, roughness: 0.6 }), x, y, Dp / 2 + 0.001, bomb); if (h > w) s.rotation.z = PI / 2; }
     for (const s of [-1, 1]) { const hd = mesh(new THREE.TorusGeometry(0.035, 0.007, 8, 16, PI), M('#1a1a1a', { metalness: 0.5 }), s * (W / 2 + 0.002), 0, 0, bomb); hd.rotation.set(0, s * PI / 2, PI / 2); }
     // küljed
+    canvasPlane(0.11, 0.04, 330, 120, (g, Wd, Hd) => { g.fillStyle = '#f2c230'; rr(g, 4, 4, Wd - 8, Hd - 8, 14); g.fill(); txt(g, 'JUHEND', Wd / 2, 38, 32, '#111'); txt(g, 'v' + B.ed, Wd / 2, 84, 48, '#111'); }, bomb, -0.15, H / 2 + 0.001, 0, false).rotation.x = -PI / 2;
     canvasPlane(0.2, 0.05, 600, 150, (g, Wd, Hd) => { g.fillStyle = '#f4f4f0'; rr(g, 4, 4, Wd - 8, Hd - 8, 16); g.fill(); txt(g, 'SN', 60, Hd / 2, 44, '#666'); txt(g, B.serial, Wd / 2 + 40, Hd / 2 + 2, 76, '#111', 'center', true, 'ui-monospace,monospace'); }, bomb, 0.05, H / 2 + 0.001, 0, false).rotation.x = -PI / 2;
     const left = new THREE.Group(); left.position.set(-W / 2 - 0.001, 0, 0); left.rotation.y = -PI / 2; bomb.add(left);
     mesh(new THREE.BoxGeometry(0.11, 0.22, 0.008), M('#1a1a1a'), 0, 0, 0.004, left);
@@ -664,21 +847,23 @@ function startBomb(forced) {
     const right = new THREE.Group(); right.position.set(W / 2 + 0.001, 0, 0); right.rotation.y = PI / 2; bomb.add(right);
     canvasPlane(0.09, 0.04, 300, 133, (g, Wd, Hd) => { g.fillStyle = '#111'; rr(g, 4, 4, Wd - 8, Hd - 8, 12); g.fill(); txt(g, B.indicator, Wd / 2, Hd / 2, 86, '#f0f0f0', 'center', true, 'ui-monospace,monospace'); }, right, 0.02, 0, 0.002, false);
     mesh(new THREE.SphereGeometry(0.012, 14, 10), B.indLit ? new THREE.MeshStandardMaterial({ color: '#fff3a0', emissive: '#ffd030', emissiveIntensity: 2.5 }) : M('#333', { roughness: 0.2 }), -0.045, 0, 0.004, right);
-    canvasPlane(0.3, 0.12, 900, 360, (g, Wd, Hd) => { txt(g, 'MUDEL PX-7', Wd / 2, 90, 80, '#888'); txt(g, 'ÄRA AVA', Wd / 2, 200, 90, '#a03020'); txt(g, '⚠ ⚠ ⚠', Wd / 2, 300, 70, '#f2c230'); }, bomb, 0, 0, -Dp / 2 - 0.001, false).rotation.y = PI;
+    if (!X) canvasPlane(0.3, 0.12, 900, 360, (g, Wd, Hd) => { txt(g, 'MUDEL PX-7', Wd / 2, 90, 80, '#888'); txt(g, 'ÄRA AVA', Wd / 2, 200, 90, '#a03020'); txt(g, '⚠ ⚠ ⚠', Wd / 2, 300, 70, '#f2c230'); }, bomb, 0, 0, -Dp / 2 - 0.001, false).rotation.y = PI;
+    else { const bk = canvasPlane(0.3, 0.08, 900, 240, (g, Wd, Hd) => { txt(g, 'MUDEL PX-7 · ÄRA AVA', Wd / 2, 120, 70, '#a03020'); }, bomb, 0, -H / 2 - 0.001, 0, false); bk.rotation.x = PI / 2;
+      for (const [w, h, x, y] of [[W + 0.004, 0.014, 0, H / 2 - 0.007], [W + 0.004, 0.014, 0, -H / 2 + 0.007], [0.014, H, W / 2 - 0.007, 0], [0.014, H, -W / 2 + 0.007, 0]]) { const L2 = Math.max(w, h); const tx = HAZ.clone(); tx.needsUpdate = true; tx.repeat.set(L2 / 0.03, 1); const s = mesh(new THREE.BoxGeometry(L2, 0.014, 0.004), new THREE.MeshStandardMaterial({ map: tx, roughness: 0.6 }), x, y, -Dp / 2 - 0.001, bomb); if (h > w) s.rotation.z = PI / 2; } }
     // moodulid
-    const kinds = ['juhtmed', 'nupp', 'lulitid', 'kood', 'lab'].sort(() => Math.random() - 0.5).slice(0, DIFF[G.diff].n);
+    const kinds = X ? ['juhtmed', 'nupp', 'lulitid', 'kood', 'lab', 'varv', 'raadio', 'sym', 'mal', 'jada'].sort(() => Math.random() - 0.5) : ['juhtmed', 'nupp', 'lulitid', 'kood', 'lab'].sort(() => Math.random() - 0.5).slice(0, DIFF[G.diff].n);
     const slots = [[-0.145, 0.075], [0, 0.075], [0.145, 0.075], [-0.145, -0.075], [0, -0.075], [0.145, -0.075]];
-    const mods = kinds.map(k => ({ juhtmed: () => modWires(B), nupp: () => modButton(B), lulitid: () => modSwitches(), kood: () => modKeypad(B), lab: () => modMaze() })[k]());
-    const order = [0, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
+    const mods = kinds.map(k => ({ juhtmed: () => modWires(B), nupp: () => modButton(B), lulitid: () => modSwitches(B), kood: () => modKeypad(B), lab: () => modMaze(B), varv: () => modSimon(B), raadio: () => modMorse(B), sym: () => modSymbols(B), mal: () => modMemory(B), jada: () => modSeq(B) })[k]());
+    const order = [0, 2, 3, 4, 5].sort(() => Math.random() - 0.5).map(si => [si, 1]); if (X) order.push(...[0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).map(si => [si, -1]));
     const tm = modTimer(); tm.g.position.set(slots[1][0], slots[1][1], Dp / 2 + 0.001); bomb.add(tm.g);
-    order.forEach((si, i) => { const mm = mods[i] || modBlank(); mm.g.position.set(slots[si][0], slots[si][1], Dp / 2 + 0.001); bomb.add(mm.g); });
+    order.forEach(([si, side], i) => { const mm = mods[i] || modBlank(); mm.g.position.set(side * slots[si][0], slots[si][1], side * (Dp / 2 + 0.001)); if (side < 0) mm.g.rotation.y = PI; bomb.add(mm.g); });
     G.mods = mods; return B;
   }
   function clearBomb() { if (!bomb) return; scene.remove(bomb); bomb.traverse(o => { if (o.geometry) o.geometry.dispose(); }); bomb = null; HITS = []; }
-  function startGame() { initAudio(); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : 3; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
+  function startGame() { initAudio(); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : G.diff === 'expert' ? 1 : 3; G.dark = 0; G.darkNext = rnd(25, 40); G.record = false; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
   function strike(m) { if (G.phase !== 'play') return; G.strikes++; G.strikeAt = Date.now(); G.rate = G.diff === 'kid' ? 1 : 1 + 0.25 * G.strikes; sfx.strike(); haptic('left', 1, 300); haptic('right', 1, 300); strikeScr.redraw(G.strikes, G.maxS); if (m && m.led) { setLed(m, '#ff2010'); setTimeout(() => !m.solved && setLed(m, '#222'), 900); } flashT = 0.35; flashCol = '#ff2010'; if (G.strikes >= G.maxS) explode(); sendState(); }
   function solve(m) { m.solved = true; G.focus = -1; setLed(m, '#20ff60'); sfx.solve(); haptic('right', 0.5, 80); if (G.mods.every(x => x.solved)) win(); sendState(); }
-  function win() { G.phase = 'win'; G.endAt = Date.now(); timerScr.redraw(G.time, 'KAHJUTU'); sfx.win(); alarm.intensity = 0; flashT = 0.6; flashCol = '#20ff60'; menu.last = ''; setTimeout(() => G.phase === 'win' && placeMenu(), 2500); sendState(); }
+  function win() { G.record = addTop(G.diff, G.time, G.strikes); G.phase = 'win'; G.endAt = Date.now(); timerScr.redraw(G.time, 'KAHJUTU'); sfx.win(); alarm.intensity = 0; flashT = 0.6; flashCol = '#20ff60'; menu.last = ''; setTimeout(() => G.phase === 'win' && placeMenu(), 2500); sendState(); }
   function explode() { if (G.phase !== 'play') return; G.phase = 'boom'; G.endAt = Date.now(); sfx.boom(); haptic('left', 1, 1500); haptic('right', 1, 1500); boomT = 3; if (bomb) bomb.visible = false; sparks(); menu.last = ''; placeMenu(); sendState(); }
   function kidInfo(m) { const o = { id: m.id, solved: m.solved };
     if (m.id === 'juhtmed') Object.assign(o, { cols: m.cols, ans: m.ans });
@@ -696,7 +881,19 @@ function startBomb(forced) {
   const SP = []; const spIM = new THREE.InstancedMesh(new THREE.BoxGeometry(0.02, 0.02, 0.02), new THREE.MeshBasicMaterial({ color: '#ffa030' }), 120); spIM.frustumCulled = false; scene.add(spIM); for (let i = 0; i < 120; i++) { SP.push({ p: new THREE.Vector3(), v: new THREE.Vector3(), l: 0 }); spIM.setMatrixAt(i, new THREE.Matrix4().makeScale(0, 0, 0)); }
   function sparks() { const c = bomb ? bomb.position : BOMB_HOME; for (const s of SP) { s.p.copy(c); s.v.set(rnd(-1, 1), rnd(0, 1.5), rnd(-1, 1)).normalize().multiplyScalar(rnd(2, 6)); s.l = rnd(0.6, 1.5); } }
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3();
-  function updateFX(dt) {
+  const torch = new THREE.SpotLight('#fff6e0', 0, 5, 0.32, 0.45, 1.2); scene.add(torch, torch.target); let torchCtrl = null;
+  const baseI = { spot: spot.intensity, fill: fill.intensity }; const hemiL = scene.children.find(o => o.isHemisphereLight); baseI.hemi = hemiL.intensity;
+  function updateDark(dt) {
+    const X = G.diff === 'expert' && G.phase === 'play';
+    if (X) { G.darkNext -= dt; if (G.darkNext <= 0 && !G.dark) { G.dark = rnd(6, 10); G.darkNext = rnd(25, 45); noise(0.3, 0.4, 200, 'lowpass'); tone(90, 40, 0.6, 'sawtooth', 0.12); } if (G.dark > 0) { G.dark -= dt; if (G.dark <= 0) { G.dark = 0; tone(200, 400, 0.2, 'sine', 0.08); } } } else G.dark = 0;
+    const k = G.dark > 0 ? (Math.random() < 0.02 ? 0.25 : 0.02) : 1; spot.intensity = baseI.spot * k; fill.intensity = baseI.fill * k; hemiL.intensity = baseI.hemi * k;
+    torch.intensity = X && G.dark > 0 ? 14 : 0;
+    if (renderer.xr.isPresenting) { const c = ctrls.find(c => c.userData.hand === 'left' && c.userData.src) || ctrls.find(c => c.userData.src); if (c) { const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); torch.position.copy(o); torch.target.position.copy(o).addScaledVector(d, 1); } }
+    else { torch.position.copy(camera.getWorldPosition(new THREE.Vector3())); torch.target.position.copy(mouseTarget); }
+    torch.target.updateMatrixWorld();
+  }
+  const mouseTarget = new THREE.Vector3(0, 1, -0.5);
+  function updateFX(dt) { updateDark(dt);
     if (boomT > 0) { boomT -= dt; flash.material.color.set('#fff4d0'); flash.material.opacity = clamp(boomT / 2, 0, 1); camera.position.x = renderer.xr.isPresenting ? 0 : (Math.random() - 0.5) * 0.03 * boomT; }
     else if (flashT > 0) { flashT -= dt; flash.material.color.set(flashCol); flash.material.opacity = flashT * 0.8; } else flash.material.opacity = 0;
     SP.forEach((s, i) => { if (s.l <= 0) return; s.l -= dt; s.v.y -= 6 * dt; s.p.addScaledVector(s.v, dt); spIM.setMatrixAt(i, s.l > 0 ? _m.compose(s.p, _q, _s.setScalar(s.l)) : _m.makeScale(0, 0, 0)); }); spIM.instanceMatrix.needsUpdate = true;
@@ -727,9 +924,9 @@ function startBomb(forced) {
   const mouseRay = e => { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); return [ray.ray.origin.clone(), ray.ray.direction.clone()]; };
   cvs.addEventListener('mousedown', e => { initAudio(); if (e.button === 2) { rdrag = { x: e.clientX, y: e.clientY }; return; } if (e.button !== 0) return; const [o, d] = mouseRay(e); mAct = press(pickAt(o, d)); });
   addEventListener('mouseup', e => { if (e.button === 2) rdrag = null; if (e.button === 0) { release(mAct); mAct = null; } });
-  addEventListener('mousemove', e => { if (rdrag && bomb) { const dx = e.clientX - rdrag.x, dy = e.clientY - rdrag.y; rdrag = { x: e.clientX, y: e.clientY }; bomb.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), dx * 0.008); const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); bomb.rotateOnWorldAxis(right, dy * 0.008); } const [o, d] = mouseRay(e); hoverH = pickAt(o, d); });
+  addEventListener('mousemove', e => { { const [o0, d0] = mouseRay(e); mouseTarget.copy(o0).addScaledVector(d0, 1); } if (rdrag && bomb) { const dx = e.clientX - rdrag.x, dy = e.clientY - rdrag.y; rdrag = { x: e.clientX, y: e.clientY }; bomb.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), dx * 0.008); const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); bomb.rotateOnWorldAxis(right, dy * 0.008); } const [o, d] = mouseRay(e); hoverH = pickAt(o, d); });
   addEventListener('wheel', e => { if (renderer.xr.isPresenting) return; camera.fov = clamp(camera.fov + e.deltaY * 0.03, 22, 70); camera.updateProjectionMatrix(); });
-  addEventListener('keydown', e => { if (e.code === 'Space' && bomb) { bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); } });
+  addEventListener('keydown', e => { if (e.code === 'Space' && bomb) { bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); } if (e.code === 'KeyF' && bomb) bomb.rotateY(PI); });
   let hoverH = null;
   function updatePointers() {
     for (const P of PANELS) P.hoverNext = -1;
