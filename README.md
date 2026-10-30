@@ -1,4 +1,4 @@
-[Uploading index (58).html…]()
+[index (59).html](https://github.com/user-attachments/files/34199248/index.59.html)
 <!doctype html>
 <html lang="et">
 <head>
@@ -203,6 +203,7 @@ function startManual(code) {
     if (!alive) { $('mStat').textContent = `Kood ${code} · ` + (netStat === 'nopeer' ? 'võrguühendus puudub – proovi sama arvuti teist vahelehte' : netStat.startsWith('err') ? 'ootan pommimeest… (' + netStat.slice(4) + ')' : 'ootan pommimeest…'); $('mTime').textContent = '-:--'; return; }
     const ph = st.phase;
     if (ph === 'play' && lastPhase !== 'play' && lastPhase !== '') kidReset(); lastPhase = ph;
+    LIVE = ph === 'play' && st.kid ? st : null; if (LIVE && $('kid').classList.contains('hide')) $('mKid').click(); kidRender();
     $('mTime').textContent = ph === 'lobby' ? '-:--' : fmt(st.time);
     $('mStrikes').textContent = ph === 'lobby' ? '' : '✕'.repeat(st.strikes) + '○'.repeat(Math.max(0, st.maxS - st.strikes));
     $('mStat').textContent = `Kood ${code} · ühendatud ✓ · ` + (ph === 'lobby' ? 'oota, kuni pommimees alustab' : ph === 'play' ? `moodulid ${st.solved}/${st.total}` : ph === 'win' ? 'POMM KAHJUTU!' : 'PAUH!');
@@ -278,7 +279,7 @@ function drawMazeManual(cv, mz, col) {
 
 
 /* ============ PILTIDEGA JUHEND (lastele) ============ */
-let E = {}, K = {};
+let E = {}, K = {}, LIVE = null, liveSig = '';
 function kidReset() { E = { bat: null, last: null, vowel: null, maa: null }; K = { mod: null }; kidRender(); }
 function setupKid() {
   let mode = 'kid'; try { mode = localStorage.getItem('pomm_mode') || 'kid'; } catch (e) { }
@@ -372,10 +373,44 @@ function kidBody() {
   } catch (e) { if (e && e.need) return back + edgeQ(e.need); throw e; }
 }
 function kidRender() {
+  if (LIVE) { const sig = JSON.stringify([LIVE.kid, LIVE.focus, Math.floor(LIVE.time) % 10, LIVE.strikes]); if (sig === liveSig) return; liveSig = sig; $('kid').innerHTML = liveView(LIVE); return; }
+  if (liveSig) { liveSig = ''; }
   const chips = []; if (E.bat != null) chips.push(`🔋 patareid: ${E.bat}`); if (E.last != null) chips.push(`🔢 viimane number: ${E.last}`); if (E.vowel != null) chips.push(`🔤 A/E/I/O/U: ${E.vowel ? 'jah' : 'ei'}`); if (E.maa != null) chips.push(`💡 MAA põleb: ${E.maa ? 'jah' : 'ei'}`);
   $('kid').innerHTML = (chips.length ? `<div class="kcard" style="padding:10px"><div class="chips">${chips.map(c => `<span class="chip">${c}</span>`).join('')}<button class="kbtn sm" data-a="edgereset">Uus pomm – unusta</button></div></div>` : '') + `<div class="kcard">${kidBody()}</div>`;
 }
+
+let etVoice = null; try { const pv = () => { etVoice = speechSynthesis.getVoices().find(v => (v.lang || '').toLowerCase().startsWith('et')) || null; }; pv(); speechSynthesis.onvoiceschanged = pv; } catch (e) { }
+function speakEt(t) { if (!etVoice) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.voice = etVoice; u.lang = etVoice.lang; speechSynthesis.speak(u); } catch (e) { } }
+const CW = c => `<b style="color:${c === 'valge' ? '#777' : WHEX[c]};text-shadow:${c === 'valge' ? '0 0 2px #000' : 'none'}">${c.toUpperCase()}</b>`;
+const ARW = { '1,0': ['➡️', 'PAREMALE'], '-1,0': ['⬅️', 'VASAKULE'], '0,1': ['⬇️', 'ALLA'], '0,-1': ['⬆️', 'ÜLES'] };
+function liveCard(m, i, st) {
+  const focus = st.focus === i;
+  const wrap = (body, say) => `<div class="kcard" style="${focus ? 'outline:6px solid #f2c230;' : ''}">${focus ? '<div class="steps" style="font-size:20px;opacity:1">👀 Pommimees vaatab seda!</div>' : ''}${body}${say && etVoice ? `<div><button class="kbtn sm" data-a="say" data-v="${say}">🔊 Loe ette</button></div>` : ''}</div>`;
+  if (m.solved) return `<div class="kcard" style="padding:8px;opacity:.7"><b style="font-size:22px">✅ ${MODNAME[m.id]} – tehtud!</b></div>`;
+  if (m.id === 'juhtmed') { const c = m.cols[m.ans]; return wrap(`<div class="kq">Ütle: ✂️ Lõika ${CW(c)} juhe!</div><div class="ksub">See on ${m.ans + 1}. juhe ülevalt.</div>${svgWires(m.cols, m.cols.length, m.ans)}`, `Lõika ${c} juhe. See on ${m.ans + 1}. juhe ülevalt.`); }
+  if (m.id === 'nupp') {
+    if (m.act === 'tap') return wrap(`${svgButton(m.col, m.lab)}<div class="ans">👆 Ütle: "Vajuta üks kord kiiresti!"</div>`, 'Vajuta nuppu üks kord kiiresti.');
+    if (!m.held) return wrap(`${svgButton(m.col, m.lab)}<div class="ans">✊ Ütle: "Vajuta ja HOIA all!"</div><div class="ksub">Ära lase lahti enne, kui ütlen!</div>`, 'Vajuta nuppu ja hoia all.');
+    if (!m.strip) return wrap(`${svgButton(m.col, m.lab)}<div class="ans">✊ Hoia… hoia…</div>`);
+    const dg = STRIP[m.strip], now = Math.floor(st.time) % 10 === dg;
+    return wrap(now ? `<div style="background:#2fbf5a;border-radius:20px;padding:30px 10px;animation:none"><div style="font-size:clamp(44px,12vw,90px);font-weight:900;color:#fff">LASE LAHTI<br>NÜÜD! 🎉</div></div>` : `<div class="ans">⏳ Ütle: "Hoia veel…"</div><div class="ksub">Kui taimeri lõpus on <b>${dg}</b>, hüüa "NÜÜD!"</div><div class="digit" style="color:#888">${Math.floor(st.time) % 10}</div>`, now ? 'Lase lahti nüüd!' : '');
+  }
+  if (m.id === 'lulitid') { const wrong = m.pos.map((p, k) => p !== m.target[k]); const allOk = !wrong.some(Boolean);
+    return wrap(`${svgLamps(m.lamps, m.target)}${allOk ? '<div class="ans" style="color:#2f9a44">✅ Ütle: "Vajuta rohelist VALMIS nuppu!"</div>' : `<div class="kq">Ütle, mis lüliti tuleb keerata:</div><div class="kgrid">${wrong.map((w, k) => w ? `<span class="kbtn" style="cursor:default">${k + 1}. ${m.target[k] ? '⬆️ ÜLES' : '⬇️ ALLA'}</span>` : '').join('')}</div>`}`,
+      allOk ? 'Vajuta rohelist valmis nuppu.' : wrong.map((w, k) => w ? `${k + 1}. lüliti ${m.target[k] ? 'üles' : 'alla'}` : '').filter(Boolean).join(', '));
+  }
+  if (m.id === 'kood') { const n = m.entry.length; return wrap(`<div style="font-size:64px">${ANIM[m.word]}</div><div class="kq">Ütle numbrid:</div><div>${[...m.code].map((d, k) => `<span class="digit" style="${k < n ? 'background:#1d5a2a;color:#9fffb8' : k === n ? 'outline:5px solid #f2c230' : 'opacity:.5'}">${d}</span>`).join('')}</div><div class="ans">Järgmine: ${m.code[n] ?? ''}</div>`, `Vajuta ${m.code[n]}`); }
+  if (m.id === 'lab') { const path = mazePath(m.mi, m.p, m.goal); const nx = path[0] ? ARW[path[0].join()] : null;
+    return wrap(`${nx ? `<div style="font-size:90px;line-height:1">${nx[0]}</div><div class="ans">Ütle: "${nx[1]}!"</div>` : ''}${svgMaze(m.mi, m.p, m.goal, path)}`, nx ? nx[1].toLowerCase() : ''); }
+  return '';
+}
+function liveView(st) {
+  const order = st.kid.map((m, i) => i).sort((a, b) => (b === st.focus) - (a === st.focus) || st.kid[a].solved - st.kid[b].solved);
+  const recent = Date.now() - (st.strikeAt || 0) < 1500;
+  return `<div class="kcard" style="padding:10px;background:#fff3c4"><b style="font-size:20px">👶 Väike režiim – pilt näitab, mida öelda!</b></div>${recent ? '<div class="kcard" style="background:#ffd0c8;font-size:28px;font-weight:900">😬 Oih! Viga – proovi uuesti</div>' : ''}${order.map(i => liveCard(st.kid[i], i, st)).join('')}`;
+}
 function kidAct(a, v) {
+  if (a === 'say') { speakEt(v); return; }
   if (a === 'home') K = { mod: null };
   else if (a === 'mod') K = { mod: v, cols: [], lamps: [0, 0, 0, 0, 0] };
   else if (a === 'redo') K = { mod: K.mod, cols: [], lamps: [0, 0, 0, 0, 0] };
@@ -470,7 +505,7 @@ function startBomb(forced) {
     indexAt(uv) { const x = uv.x * this.W, y = (1 - uv.y) * this.H; return this.buttons.findIndex(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h); }
     click(uv) { const i = this.indexAt(uv); if (i >= 0) { sfx.click(); this.buttons[i].fn(); this.last = ''; this.refresh(); } }
   }
-  const DIFF = { easy: { n: 3, time: 300, name: 'Lihtne', sub: '3 moodulit · 5:00' }, mid: { n: 4, time: 240, name: 'Keskmine', sub: '4 moodulit · 4:00' }, hard: { n: 5, time: 210, name: 'Raske', sub: '5 moodulit · 3:30' } };
+  const DIFF = { kid: { n: 2, time: 480, name: 'Väike 👶', sub: 'lastele · 8:00' }, easy: { n: 3, time: 300, name: 'Lihtne', sub: '3 moodulit · 5:00' }, mid: { n: 4, time: 240, name: 'Keskmine', sub: '4 moodulit · 4:00' }, hard: { n: 5, time: 210, name: 'Raske', sub: '5 moodulit · 3:30' } };
   const G = { phase: 'lobby', diff: 'easy', time: 0, strikes: 0, maxS: 3, mods: [], B: null, endAt: 0 };
   const manualOn = () => performance.now() - lastHi < 5000;
   const menu = new Panel(0.8, 0.62, 1000, 780, (g, P) => {
@@ -488,7 +523,7 @@ function startBomb(forced) {
       for (let i = 0; i < 3; i++) { const a = G.clock * 3 + i * 2.1; g.fillStyle = '#f2c230'; g.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(a)); g.beginPath(); g.arc(P.W / 2 - 50 + i * 50, 610, 14, 0, PI * 2); g.fill(); } g.globalAlpha = 1;
       P.btn(300, 660, 400, 80, 'Mängi üksi', () => { G.solo = true; }, { col: '#666', fs: 30 });
     } else if (G.phase === 'lobby') {
-      Object.entries(DIFF).forEach(([k, d], i) => P.btn(40 + i * 312, 330, 296, 130, d.name, () => { G.diff = k; }, { on: G.diff === k, sub: d.sub }));
+      Object.entries(DIFF).forEach(([k, d], i) => P.btn(40 + i * 232, 330, 220, 130, d.name, () => { G.diff = k; }, { on: G.diff === k, sub: d.sub, fs: 36 }));
       P.btn(40, 500, 920, 170, 'ALUSTA', startGame, { fs: 80, col: '#e5483b' });
       txt(g, on ? 'Kõik on valmis – vali raskus ja alusta!' : 'Mängid üksi (juhendajat pole)', P.W / 2, 720, 28, on ? '#3fbf6a' : '#888');
     } else if (G.phase === 'play') {
@@ -640,12 +675,20 @@ function startBomb(forced) {
     G.mods = mods; return B;
   }
   function clearBomb() { if (!bomb) return; scene.remove(bomb); bomb.traverse(o => { if (o.geometry) o.geometry.dispose(); }); bomb = null; HITS = []; }
-  function startGame() { initAudio(); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = 3; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, 3); placeMenu(); sendState(); }
-  function strike(m) { if (G.phase !== 'play') return; G.strikes++; G.rate = 1 + 0.25 * G.strikes; sfx.strike(); haptic('left', 1, 300); haptic('right', 1, 300); strikeScr.redraw(G.strikes, G.maxS); if (m && m.led) { setLed(m, '#ff2010'); setTimeout(() => !m.solved && setLed(m, '#222'), 900); } flashT = 0.35; flashCol = '#ff2010'; if (G.strikes >= G.maxS) explode(); sendState(); }
-  function solve(m) { m.solved = true; setLed(m, '#20ff60'); sfx.solve(); haptic('right', 0.5, 80); if (G.mods.every(x => x.solved)) win(); sendState(); }
+  function startGame() { initAudio(); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : 3; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
+  function strike(m) { if (G.phase !== 'play') return; G.strikes++; G.strikeAt = Date.now(); G.rate = G.diff === 'kid' ? 1 : 1 + 0.25 * G.strikes; sfx.strike(); haptic('left', 1, 300); haptic('right', 1, 300); strikeScr.redraw(G.strikes, G.maxS); if (m && m.led) { setLed(m, '#ff2010'); setTimeout(() => !m.solved && setLed(m, '#222'), 900); } flashT = 0.35; flashCol = '#ff2010'; if (G.strikes >= G.maxS) explode(); sendState(); }
+  function solve(m) { m.solved = true; G.focus = -1; setLed(m, '#20ff60'); sfx.solve(); haptic('right', 0.5, 80); if (G.mods.every(x => x.solved)) win(); sendState(); }
   function win() { G.phase = 'win'; G.endAt = Date.now(); timerScr.redraw(G.time, 'KAHJUTU'); sfx.win(); alarm.intensity = 0; flashT = 0.6; flashCol = '#20ff60'; menu.last = ''; setTimeout(() => G.phase === 'win' && placeMenu(), 2500); sendState(); }
   function explode() { if (G.phase !== 'play') return; G.phase = 'boom'; G.endAt = Date.now(); sfx.boom(); haptic('left', 1, 1500); haptic('right', 1, 1500); boomT = 3; if (bomb) bomb.visible = false; sparks(); menu.last = ''; placeMenu(); sendState(); }
-  function sendState() { if (!net) return; net.send({ type: 'st', phase: G.phase, time: G.time, strikes: G.strikes, maxS: G.maxS, solved: G.mods.filter(m => m.solved).length, total: G.mods.length, diff: G.diff, endAt: G.endAt }); }
+  function kidInfo(m) { const o = { id: m.id, solved: m.solved };
+    if (m.id === 'juhtmed') Object.assign(o, { cols: m.cols, ans: m.ans });
+    if (m.id === 'nupp') Object.assign(o, { col: m.col, lab: m.lab, act: m.act, held: m.held, strip: m.strip });
+    if (m.id === 'lulitid') Object.assign(o, { lamps: m.lamps, target: m.target, pos: m.pos });
+    if (m.id === 'kood') Object.assign(o, { word: m.word, code: m.code, entry: m.entry });
+    if (m.id === 'lab') Object.assign(o, { mi: m.mi, p: m.p, goal: m.goal });
+    return o; }
+  function sendState() { if (!net) return; const msg = { type: 'st', phase: G.phase, time: G.time, strikes: G.strikes, maxS: G.maxS, solved: G.mods.filter(m => m.solved).length, total: G.mods.length, diff: G.diff, endAt: G.endAt, strikeAt: G.strikeAt || 0 };
+    if (G.diff === 'kid' && G.phase === 'play') { msg.kid = G.mods.map(kidInfo); msg.focus = G.focus ?? -1; } net.send(msg); }
 
   /* --- efektid --- */
   let flashT = 0, flashCol = '#fff', boomT = 0;
@@ -693,6 +736,7 @@ function startBomb(forced) {
     if (renderer.xr.isPresenting) for (const c of ctrls) { if (!c.userData.src) continue; const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); c.userData.line.scale.z = h ? h.distance : 0.6; c.userData.dot.visible = !!h; if (h) { c.userData.dot.position.copy(h.point); if (h.object.userData.panel) h.object.userData.panel.hoverNext = h.object.userData.panel.indexAt(h.uv); }
       if (c.userData.grab && bomb) { _m.multiplyMatrices(c.matrixWorld, c.userData.grab); _m.decompose(bomb.position, bomb.quaternion, _s); } }
     else if (hoverH && hoverH.object.userData.panel) hoverH.object.userData.panel.hoverNext = hoverH.object.userData.panel.indexAt(hoverH.uv);
+    { let fm = null; if (renderer.xr.isPresenting) { for (const c of ctrls) { if (!c.userData.src) continue; const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); if (h && h.object.userData.hit) { fm = h.object.userData.hit.mod; break; } } } else if (hoverH && hoverH.object.userData.hit) fm = hoverH.object.userData.hit.mod; if (fm) G.focus = G.mods.indexOf(fm); }
     cvs.style.cursor = hoverH && (hoverH.object.userData.panel || hoverH.object.userData.hit) ? 'pointer' : 'default';
     for (const P of PANELS) if (P.hoverNext !== P.hover) { P.hover = P.hoverNext; P.refresh(); }
   }
@@ -708,7 +752,7 @@ function startBomb(forced) {
     G.clock += dt;
     if (G.phase === 'play') { G.time -= dt * G.rate; const s = Math.floor(G.time); if (s !== lastSec) { lastSec = s; timerScr.redraw(G.time); sfx.tick(G.time < 30); } for (const m of G.mods) m.update && m.update(dt); if (G.time <= 0) { G.time = 0; timerScr.redraw(0); explode(); } }
     updatePointers(); updateFX(dt);
-    sendT += dt; if (sendT > 0.3) { sendT = 0; sendState(); }
+    sendT += dt; if (sendT > (G.diff === 'kid' ? 0.15 : 0.3)) { sendT = 0; sendState(); }
     menuT += dt; if (menuT > 0.5) { menuT = 0; const on = manualOn(); if (on && !G.wasOn) { sfx.solve(); G.solo = false; } G.wasOn = on; const sig = [G.phase, on, netStatus, code, G.strikes, G.mods.filter(m => m.solved).length, G.diff, G.solo, G.phase === 'lobby' && !on ? Math.floor(G.clock * 2) : 0].join('|'); if (sig !== menu.last) { menu.last = sig; menu.refresh(); } $('hudNet').textContent = manualOn() ? 'Juhendaja on ühendatud ✓' : netStatus === 'nopeer' ? 'Võrguteek ei laadinud – testi sama arvuti teise vahelehega' : 'Ootan juhendajat…'; }
   }
   renderer.setAnimationLoop(() => { const dt = Math.min(clock.getDelta(), 0.05); step(dt); renderer.render(scene, camera); });
