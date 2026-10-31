@@ -1,3 +1,4 @@
+[index (4).html](https://github.com/user-attachments/files/34212439/index.4.html)
 <!doctype html>
 <html lang="et">
 <head>
@@ -81,6 +82,10 @@
   table.toc td{text-align:left;padding:6px 14px} table.morse td{padding:4px 10px}
   .lines{height:220px;background:repeating-linear-gradient(#f6efdc 0 31px,#c9bc98 31px 32px)}
   #banner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,110px);font-weight:900;z-index:20;pointer-events:none}
+  #caseBar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#1d2026;color:#fff;border-top:5px solid var(--yellow);padding:10px 14px;text-align:center;font-size:20px}
+  #caseBar b{font-size:44px;letter-spacing:.2em;color:var(--yellow);font-family:ui-monospace,monospace;margin-left:8px}
+  #caseBar span{margin:0 18px;display:inline-block}
+  #caseBar small{display:block;opacity:.75;font-size:14px;margin-top:2px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script type="importmap">
@@ -92,7 +97,7 @@
   <h1>💣 POMMINIMETAJAD</h1>
   <p>Kahe mängija mäng. <b>Pommimees</b> näeb pommi, aga mitte juhendit. <b>Juhendaja</b> näeb juhendit, aga mitte pommi. Rääkige omavahel ja muukige pomm lahti enne, kui aeg otsa saab!</p>
   <div class="roles" id="roles">
-    <div class="role" id="rBomb"><b>💣 Pommimees</b>Quest VR prillides või arvutis. Sinu ette tuleb pomm.</div>
+    <div class="role" id="rBomb"><b>💣 Pommimees</b>Quest VR kontrolleritega (käte jälgimine pole vajalik) või arvutis. Sinu ette tuleb kohver koos pommiga.</div>
     <div class="role" id="rMan"><b>📖 Juhendaja</b>Arvutis või telefonis. Sa näed pommi juhendit.</div>
   </div>
   <div id="codeBox" class="hide">
@@ -107,12 +112,12 @@
   <div>Ruumi kood: <span class="code" id="hudCode">----</span></div>
   <div id="hudNet">Ootan juhendajat…</div>
   <hr style="border-color:#444">
-  <b>Quest:</b> vajuta all <b>ENTER VR</b>. Päästik = vajuta. Haare = võta tööriist laualt (tangid, kruvikeeraja, taskulamp) või pomm kätte. Haare uuesti = pane tööriist tagasi.<br>
-  <b>Arvutis:</b> vasak klõps = vajuta (hoia nuppu all, kui vaja). Klahvid <b>1–4</b> või klõps laual = vali tööriist. Juhtmeid lõikad ainult <b>tangidega</b>, kaane kruvid keerad <b>kruvikeerajaga</b>. Parem nupp + lohista = keera pommi. F = pööra ümber (ekspert: moodulid ka taga!). Tühik = tagasi. Ratas = suumi.
+  <b>Quest:</b> vajuta all <b>ENTER VR</b> (kontrollerid sobivad, käte jälgimine pole vajalik – näpistus töötab päästikuna). Päästik = vajuta / keera ratast / hoia paljas käsi. Haare = võta tööriist <b>tööriistakohvrist</b> või haara pommi käepidemed. Haare uuesti = pane tööriist tagasi.<br><b>2 kätt:</b> (1) kohvri mõlemad lukud: sea koodid ratastel (ülemine/alumine pool = ▲/▼) ja hoia <b>korraga</b> mõlemat riivi paljaste kätega; (2) pomm välja: haara <b>mõlemast</b> külgkäepidemest; (3) kaanel: ühe käega hoia plaati, teisega keera kruvikeerajat <b>vastupäeva</b> (randme keeramine!); (4) lõpuks kangita plaat <b>kangiga</b> lahti (tõmba pinnast eemale). Tangid: vii juhtme juurde ja vajuta päästikut.<br>
+  <b>Arvutis:</b> vasak klõps = vajuta (hoia nuppu all, kui vaja). Klahvid <b>1–5</b> või klõps tööriistakohvris = vali tööriist (1 = käsi). <b>E</b> = teine käsi: sihi riivi / plaati / käepidet ja vajuta E, et seda hoida, siis tegutse hiirega (uuesti E = lase lahti). Kruvi keeramiseks hoia hiirenuppu all. Juhtmeid lõikad ainult <b>tangidega</b>, kaane kruvid keerad <b>kruvikeerajaga</b>. Parem nupp + lohista = keera pommi. F = pööra ümber (ekspert: moodulid ka taga!). Tühik = tagasi. Ratas = suumi.
   <br><button class="btn" style="font-size:13px;padding:4px 10px;margin-top:6px" onclick="this.parentNode.classList.add('hide')">Peida</button>
 </div>
 
-<div id="toolHud" class="hide" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(20,22,26,.9);border:2px solid #f2c230;border-radius:12px;padding:8px 14px;font-size:15px;z-index:6;color:#fff;white-space:nowrap">Käes: ✋ käsi · <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp</div>
+<div id="toolHud" class="hide" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(20,22,26,.9);border:2px solid #f2c230;border-radius:12px;padding:8px 14px;font-size:15px;z-index:6;color:#fff;white-space:nowrap">Käes: ✋ käsi · <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp · <b style="color:#f2c230">5</b> kang · <b style="color:#f2c230">E</b> teine käsi (hoia)</div>
 <div id="manual" class="hide">
   <div id="mbar"><span class="t" id="mTime">-:--</span><span class="s" id="mStrikes"></span><span class="st" id="mStat">Ühendan…</span><span id="modeSw"><button id="mKid">👶 Piltidega</button><button id="mFull">📖 Täisjuhend</button></span></div>
   <div id="kid"></div>
@@ -120,11 +125,13 @@
   <div id="mbody"></div>
 </div>
 <div id="banner" class="hide"></div>
+<div id="caseBar" class="hide"></div>
 
 <script type="module">
 import * as THREE from 'three';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+import { XRHandModelFactory } from 'three/addons/webxr/XRHandModelFactory.js';
 
 /* ============ ÜHINE: REEGLID ============ */
 const $ = id => document.getElementById(id);
@@ -266,7 +273,7 @@ function startManual(code) {
   setInterval(render, 500);
   function render() {
     const alive = st && performance.now() - last < 4000;
-    if (!alive) { $('mStat').textContent = `Kood ${code} · ` + (netStat === 'nopeer' ? 'võrguühendus puudub – proovi sama arvuti teist vahelehte' : netStat.startsWith('err') ? 'ootan pommimeest… (' + netStat.slice(4) + ')' : 'ootan pommimeest…'); $('mTime').textContent = '-:--'; return; }
+    if (!alive) { $('mStat').textContent = `Kood ${code} · ` + (netStat === 'nopeer' ? 'võrguühendus puudub – proovi sama arvuti teist vahelehte' : netStat.startsWith('err') ? 'ootan pommimeest… (' + netStat.slice(4) + ')' : 'ootan pommimeest…'); $('mTime').textContent = '-:--'; $('caseBar').classList.add('hide'); return; }
     const ph = st.phase;
     if (ph === 'play' && lastPhase !== 'play' && lastPhase !== '') kidReset(); lastPhase = ph;
     if (st.diff !== lastDiff) { lastDiff = st.diff; if (st.diff === 'expert' && !$('kid').classList.contains('hide')) $('mFull').click(); }
@@ -274,6 +281,7 @@ function startManual(code) {
     $('mTime').textContent = ph === 'lobby' ? '-:--' : fmt(st.time);
     $('mStrikes').textContent = ph === 'lobby' ? '' : '✕'.repeat(st.strikes) + '○'.repeat(Math.max(0, st.maxS - st.strikes));
     $('mStat').textContent = `Kood ${code} · ühendatud ✓ · ` + (ph === 'lobby' ? 'oota, kuni pommimees alustab' : ph === 'play' ? `moodulid ${st.solved}/${st.total}` : ph === 'win' ? 'POMM KAHJUTU!' : 'PAUH!');
+    { const cb = $('caseBar'); if (ph === 'play' && st.case) { cb.classList.remove('hide'); cb.innerHTML = st.case.cs === 'locked' ? `🔒 KOHVRI KOODID <span>VASAK <b>${st.case.L}</b></span><span>PAREM <b>${st.case.R}</b></span><small>Pommimees keerab ratastel numbrid (▲▼) ja hoiab SIIS mõlemat riivi korraga – kahe käega!</small>` : '🙌 Kohver on lahti – pommimees tõstab pommi kahe käega välja…'; } else cb.classList.add('hide'); }
     const b = $('banner');
     if (ph === 'win' || ph === 'boom') { b.classList.remove('hide'); b.textContent = ph === 'win' ? '✅ KAHJUTU!' : '💥 PAUH!'; b.style.color = ph === 'win' ? '#2f9a44' : '#e5483b'; b.style.textShadow = '0 4px 0 #000'; b.style.opacity = (performance.now() - (st.endAt || 0)) > 0 ? 1 : 1; clearTimeout(render.bt); render.bt = setTimeout(() => b.classList.add('hide'), 3500); }
     else b.classList.add('hide');
@@ -550,6 +558,7 @@ function startBomb(forced) {
   const spot = new THREE.SpotLight('#fff1d6', 40, 5, 0.6, 0.5, 1.5); spot.position.set(0.3, 2.3, -0.2); spot.target.position.set(0, 0.95, -0.45); spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -0.0005; scene.add(spot, spot.target);
   const fill = new THREE.PointLight('#6080ff', 1.2, 4); fill.position.set(-1, 1.6, 0.5); scene.add(fill);
   const alarm = new THREE.PointLight('#ff2010', 0, 6); alarm.position.set(0, 2.3, -1.6); scene.add(alarm);
+  const tcLight = new THREE.PointLight('#ffe8c0', 1.6, 2.2); tcLight.position.set(0.62, 1.5, -0.3); scene.add(tcLight);
 
   /* --- abi --- */
   const cnv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
@@ -592,12 +601,8 @@ function startBomb(forced) {
     const w3 = mesh(new THREE.PlaneGeometry(6, 4), wm, 2.5, 2, 0.5); w3.rotation.y = -PI / 2; w3.castShadow = false;
     // laud
     const wood = M('#4a3a2a', { roughness: 0.8, metalness: 0 });
-    mesh(new THREE.BoxGeometry(1.4, 0.05, 0.75), M('#5a5e64', { metalness: 0.6, roughness: 0.4 }), 0, 0.8, -0.55);
-    for (const [x, z] of [[-0.65, -0.88], [0.65, -0.88], [-0.65, -0.22], [0.65, -0.22]]) mesh(new THREE.BoxGeometry(0.05, 0.8, 0.05), M('#3a3e44', { metalness: 0.6 }), x, 0.4, z);
-    // tööriistad laual
-    mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 8).rotateZ(PI / 2), M('#c03020'), 0.45, 0.835, -0.35);
-    mesh(new THREE.BoxGeometry(0.03, 0.01, 0.12), M('#aab0b8', { metalness: 0.9 }), 0.52, 0.83, -0.45);
-    mesh(new THREE.BoxGeometry(0.22, 0.01, 0.3), M('#e8e0c8', { roughness: 1, metalness: 0 }), -0.45, 0.83, -0.5).rotation.y = 0.2;
+    mesh(new THREE.BoxGeometry(2.1, 0.05, 0.8), M('#5a5e64', { metalness: 0.6, roughness: 0.4 }), 0, 0.8, -0.55);
+    for (const [x, z] of [[-1.0, -0.92], [1.0, -0.92], [-1.0, -0.18], [1.0, -0.18]]) mesh(new THREE.BoxGeometry(0.05, 0.8, 0.05), M('#3a3e44', { metalness: 0.6 }), x, 0.4, z);
     // hoiatussilt
     const sc = cnv(512, 256), sg = sc.getContext('2d'); sg.fillStyle = '#f2c230'; sg.fillRect(0, 0, 512, 256); sg.fillStyle = '#111'; sg.fillRect(12, 12, 488, 232); sg.fillStyle = '#f2c230'; sg.fillRect(24, 24, 464, 208); txt(sg, '⚠ OHT!', 256, 95, 90, '#111'); txt(sg, 'LÕHKEAINE', 256, 180, 60, '#111');
     mesh(new THREE.PlaneGeometry(0.8, 0.4), new THREE.MeshStandardMaterial({ map: ctex(sc) }), 0.9, 1.9, -2.19);
@@ -642,7 +647,9 @@ function startBomb(forced) {
       txt(g, on ? 'Kõik on valmis – vali raskus ja alusta!' : 'Mängid üksi (juhendajat pole)', P.W / 2, 720, 28, on ? '#3fbf6a' : '#888');
     } else if (G.phase === 'play') {
       txt(g, `Moodulid: ${G.mods.filter(m => m.solved).length}/${G.mods.length}   Vead: ${G.strikes}/${G.maxS}`, P.W / 2, 380, 44, '#fff');
-      txt(g, 'Räägi juhendajaga! Keera pommi, et näha külgi.', P.W / 2, 450, 30, '#aab');
+      { const on2 = manualOn(); const l1 = G.cs === 'locked' ? (on2 ? '🔒 Kohver on lukus – küsi juhendajalt kahte koodi!' : `🔒 Koodid: vasak ${G.codeL} · parem ${G.codeR}`) : G.cs === 'open' ? '🙌 Tõsta pomm välja – haara KAHE käega külgedelt!' : 'Räägi juhendajaga! Keera pommi, et näha külgi.';
+        fit(g, l1, P.W / 2, 450, 30, G.cs === 'locked' ? '#f2c230' : '#aab', P.W - 60);
+        if (G.cs === 'locked') fit(g, 'Sea mõlemad lukud, siis hoia KORRAGA mõlemat riivi (2 kätt)', P.W / 2, 500, 26, '#aab', P.W - 60, 'center', false); }
       P.btn(300, 560, 400, 110, 'Loobu', () => explode(), { col: '#666', fs: 36 });
     } else {
       const win = G.phase === 'win'; txt(g, win ? '✅ POMM KAHJUTU!' : '💥 PAUH!', P.W / 2, 400, 90, win ? '#3fbf6a' : '#e5483b');
@@ -665,6 +672,7 @@ function startBomb(forced) {
   function base() { const g = new THREE.Group(); mesh(new THREE.BoxGeometry(0.128, 0.128, 0.01), plateMat, 0, 0, -0.005, g); for (const [x, y] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.003, 8).rotateX(PI / 2), screwM, x * 0.057, y * 0.057, 0.001, g);
     const led = mesh(new THREE.SphereGeometry(0.0055, 12, 8), new THREE.MeshStandardMaterial({ color: '#222', emissive: '#000', roughness: 0.3 }), 0.052, 0.052, 0.003, g); return { g, led }; }
   const hit = (m, mod, part) => { m.userData.hit = { mod, part }; HITS.push(m); return m; };
+  const hitH = (m, mod, part) => { m.userData.hit = { mod, part, hold: true }; HITS.push(m); return m; }; // 'hold' = seda hoitakse paljaste kätega (2. käsi)
   function setLed(m, c) { m.led.material.color.set(c); m.led.material.emissive.set(c); }
 
   // --- moodul: juhtmed
@@ -836,16 +844,115 @@ function startBomb(forced) {
     return { id: 'timer', ...b, solved: true }; }
   function modBlank() { const b = base(); b.led.visible = false; for (let i = 0; i < 5; i++) mesh(new THREE.BoxGeometry(0.08, 0.005, 0.003), M('#1a1c20'), 0, 0.03 - i * 0.015, 0.001, b.g); return { g: b.g, solved: true }; }
 
+  /* --- kohver: pomm sees, kaks koodilukku (vasak + parem), kahe käega avamine --- */
+  const CASE_HOME = new THREE.Vector3(0, 0.825, -0.55), CASE_AWAY = new THREE.Vector3(-0.64, 0.825, -0.45);
+  let CS = null, deskPin = null, lidA = 0, lidV = 0, anim = null;
+  const caseMod = { id: 'kohver', solved: true, active: () => true };
+  const bombMod = { id: 'pomm', solved: true, active: () => G.cs === 'open', held: { hL: false, hR: false } };
+  const invis = () => new THREE.MeshBasicMaterial({ visible: false });
+  const lockOk = L => L.d.join('') === L.code;
+  function buildCase() {
+    const cw = 0.62, cd = 0.5, wh = 0.2, wt = 0.014;
+    bombMod.held.hL = bombMod.held.hR = false; lidA = 0; lidV = 0; anim = null; G.cs = 'locked';
+    const g = new THREE.Group(); g.position.copy(CASE_HOME); scene.add(g);
+    const shell = M('#7d838b', { metalness: 0.8, roughness: 0.38 }), foam = M('#15171a', { roughness: 1, metalness: 0 }), trim = M('#2a2d32', { metalness: 0.6, roughness: 0.5 });
+    mesh(new THREE.BoxGeometry(cw, 0.012, cd), shell, 0, 0.006, 0, g);
+    mesh(new THREE.BoxGeometry(cw, wh, wt), shell, 0, wh / 2, cd / 2 - wt / 2, g);
+    mesh(new THREE.BoxGeometry(cw, wh, wt), shell, 0, wh / 2, -cd / 2 + wt / 2, g);
+    mesh(new THREE.BoxGeometry(wt, wh, cd), shell, cw / 2 - wt / 2, wh / 2, 0, g);
+    mesh(new THREE.BoxGeometry(wt, wh, cd), shell, -cw / 2 + wt / 2, wh / 2, 0, g);
+    mesh(new THREE.BoxGeometry(cw - 0.04, 0.03, cd - 0.04), foam, 0, 0.027, 0, g);
+    for (const z of [-0.222, 0.222]) mesh(new THREE.BoxGeometry(cw - 0.04, 0.11, 0.04), foam, 0, 0.067, z, g);
+    for (const x of [-1, 1]) for (const z of [-1, 1]) mesh(new THREE.BoxGeometry(0.03, wh + 0.01, 0.03), trim, x * (cw / 2), wh / 2, z * (cd / 2), g);
+    for (const x of [-0.2, 0.2]) mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.06, 10).rotateZ(PI / 2), trim, x, wh, -cd / 2 - 0.004, g);
+    // kaas
+    const lid = new THREE.Group(); lid.position.set(0, wh, -cd / 2); g.add(lid);
+    mesh(new THREE.BoxGeometry(cw + 0.008, 0.06, cd + 0.008), shell, 0, 0.03, cd / 2, lid);
+    mesh(new THREE.BoxGeometry(cw - 0.03, 0.004, cd - 0.03), foam, 0, -0.001, cd / 2, lid);
+    const ul = canvasPlane(0.4, 0.12, 800, 240, (gg, Wd) => { txt(gg, 'PX-7 · LÕHKEAINE', Wd / 2, 80, 80, '#a03020'); txt(gg, 'käsitse ettevaatlikult', Wd / 2, 170, 54, '#889'); }, lid, 0, -0.0035, cd / 2); ul.rotation.x = PI / 2;
+    const tl = canvasPlane(0.3, 0.09, 600, 180, (gg, Wd, Hd) => { gg.fillStyle = '#f2c230'; rr(gg, 4, 4, Wd - 8, Hd - 8, 20); gg.fill(); txt(gg, '⚠ LÕHKEAINE', Wd / 2, Hd / 2 + 4, 76, '#111'); }, lid, 0, 0.0605, cd / 2 - 0.13); tl.rotation.x = -PI / 2;
+    // kaks koodilukku
+    const locks = {}; const codeL = String(rint(1000)).padStart(3, '0'); let codeR; do { codeR = String(rint(1000)).padStart(3, '0'); } while (codeR === codeL);
+    G.codeL = codeL; G.codeR = codeR;
+    for (const sx of [-1, 1]) {
+      const side = sx < 0 ? 'L' : 'R'; const L = { side, code: sx < 0 ? codeL : codeR, d: [0, 0, 0], dg: [], held: false, shake: 0 };
+      do { L.d = [rint(10), rint(10), rint(10)]; } while (lockOk(L));
+      const lk = new THREE.Group(); lk.position.set(sx * 0.2, 0.06, 0.38); lid.add(lk);
+      mesh(new THREE.BoxGeometry(0.2, 0.008, 0.12), M('#3a3e44', { metalness: 0.8, roughness: 0.35 }), 0, 0.004, 0, lk);
+      for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.003, 8), screwM, x * 0.094, 0.0095, z * 0.054, lk);
+      for (let i = 0; i < 3; i++) {
+        const x = (i - 1) * 0.036 - sx * 0.015;
+        mesh(new THREE.BoxGeometry(0.033, 0.008, 0.062), M('#0d0e10', { roughness: 0.4 }), x, 0.011, 0, lk);
+        const dg = canvasPlane(0.029, 0.052, 116, 208, (gg, Wd, Hd) => {
+          gg.fillStyle = '#0c0d10'; rr(gg, 2, 2, Wd - 4, Hd - 4, 14); gg.fill();
+          txt(gg, String(L.d[i]), Wd / 2, Hd / 2 + 4, 130, '#f2f2f2', 'center', true, 'ui-monospace,monospace');
+          gg.fillStyle = '#f2c230'; gg.beginPath(); gg.moveTo(Wd / 2, 8); gg.lineTo(Wd / 2 - 14, 28); gg.lineTo(Wd / 2 + 14, 28); gg.fill();
+          gg.beginPath(); gg.moveTo(Wd / 2, Hd - 8); gg.lineTo(Wd / 2 - 14, Hd - 28); gg.lineTo(Wd / 2 + 14, Hd - 28); gg.fill();
+        }, lk, x, 0.0156, 0); dg.rotation.x = -PI / 2; L.dg.push(dg);
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.03, 0.064), invis()); hb.position.set(x, 0.02, 0); lk.add(hb); hit(hb, caseMod, side + i);
+      }
+      L.latch = mesh(new THREE.BoxGeometry(0.032, 0.014, 0.045), M('#c9ced4', { metalness: 0.9, roughness: 0.3 }), sx * 0.075, 0.015, 0, lk);
+      const ll = canvasPlane(0.026, 0.03, 104, 120, (gg, Wd, Hd) => txt(gg, 'HOIA', Wd / 2, Hd / 2, 36, '#222'), L.latch, 0, 0.0071, 0); ll.rotation.x = -PI / 2;
+      const lh = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.06), invis()); lh.position.set(sx * 0.075, 0.02, 0); lk.add(lh); hitH(lh, caseMod, 'l' + side);
+      L.led = mesh(new THREE.SphereGeometry(0.006, 12, 8), new THREE.MeshStandardMaterial({ color: '#ff2010', emissive: '#ff2010', emissiveIntensity: 1.6 }), sx * 0.075, 0.012, -0.045, lk);
+      const nm = canvasPlane(0.1, 0.016, 300, 48, (gg, Wd, Hd) => txt(gg, sx < 0 ? 'VASAK LUKK' : 'PAREM LUKK', Wd / 2, Hd / 2, 34, '#bbb'), lk, -sx * 0.015, 0.0085, 0.046); nm.rotation.x = -PI / 2;
+      locks[side] = L;
+    }
+    CS = { g, lid, locks };
+  }
+  caseMod.down = (part, tool, who, h) => {
+    if (G.cs !== 'locked' || !CS) return;
+    if (part[0] === 'l') { const L = CS.locks[part[1]];
+      if (tool) { hint('Pane tööriist käest ära – lukku hoitakse paljaste kätega 🖐'); return; }
+      if (!lockOk(L)) { hint('Lukk ei anna järele – vale kood 🔒'); tone(150, 110, 0.25, 'sawtooth', 0.08); L.shake = 0.3; return; }
+      L.held = true; sfx.click(); tone(900, 1200, 0.05, 'square', 0.05);
+      if (!CS.locks[part[1] === 'L' ? 'R' : 'L'].held) hint('Hoia seda riivi ja vajuta TEISE käega teist riivi 🙌');
+      return; }
+    const L = CS.locks[part[0]], i = +part[1]; const lp = h ? h.object.worldToLocal(h.point.clone()) : null; const dir = lp && lp.z > 0 ? -1 : 1;
+    L.d[i] = (L.d[i] + dir + 10) % 10; L.dg[i].redraw(); sfx.key(); tone(1100 + L.d[i] * 40, 1100 + L.d[i] * 40, 0.02, 'square', 0.03);
+    if (who && who !== 'desk') haptic(who.userData.hand, 0.2, 20);
+  };
+  caseMod.up = part => { if (part[0] === 'l' && CS) CS.locks[part[1]].held = false; };
+  bombMod.down = part => { if (G.cs !== 'open') return; bombMod.held[part] = true; sfx.click(); if (bombMod.held.hL && bombMod.held.hR) liftOut(); else hint('Haara pommist MÕLEMA käega – ühest käest on liiga raske 🙌'); };
+  bombMod.up = part => { bombMod.held[part] = false; };
+  function openCase() { if (G.cs !== 'locked') return; G.cs = 'open'; sfx.solve(); tone(180, 90, 0.4, 'sawtooth', 0.1); noise(0.2, 0.5, 800); haptic('left', 0.8, 150); haptic('right', 0.8, 150); hint('Kohver avanes! Tõsta pomm välja – haara KAHE käega käepidemetest 🙌'); sendState(); }
+  function liftOut() { if (G.cs !== 'open' || !bomb) return; G.cs = 'out'; for (const c of ctrls) c.userData.hpart = null; bombMod.held.hL = bombMod.held.hR = false; sfx.solve(); tone(300, 600, 0.3, 'triangle', 0.08); haptic('left', 0.6, 120); haptic('right', 0.6, 120);
+    anim = { t: 0, p0: bomb.position.clone(), q0: bomb.quaternion.clone(), q1: new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.55, 0, 0)), c0: CS.g.position.clone() };
+    hint('Pomm on vaba! Võta tööriistakohvrist tööriistad 🔧'); sendState(); }
+  function updateCase(dt) {
+    if (!CS) return;
+    if (G.cs === 'locked') { const a = CS.locks.L, b = CS.locks.R; for (const L of [a, b]) if (L.held && !lockOk(L)) L.held = false; if (a.held && b.held) openCase(); }
+    const tgt = G.cs === 'locked' ? 0 : 1.9;
+    lidV += ((tgt - lidA) * 80 - lidV * 9) * dt; lidA = clamp(lidA + lidV * dt, 0, 2.05); CS.lid.rotation.x = -lidA;
+    for (const s of ['L', 'R']) { const L = CS.locks[s], sx = s === 'L' ? -1 : 1; const tx = sx * 0.075 + sx * 0.009 * (L.held ? 1 : 0);
+      L.latch.position.x += (tx - L.latch.position.x) * Math.min(1, dt * 20) + (L.shake > 0 ? Math.sin(G.clock * 90) * 0.0006 : 0); if (L.shake > 0) L.shake -= dt;
+      const col = G.cs === 'locked' ? (lockOk(L) ? '#20ff60' : '#ff2010') : '#20ff60'; L.led.material.color.set(col); L.led.material.emissive.set(col); }
+    if (anim && bomb) { anim.t = Math.min(1, anim.t + dt / 1.0); const t = anim.t, k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      bomb.position.lerpVectors(anim.p0, BOMB_HOME, k); bomb.position.y += Math.sin(k * PI) * 0.14; bomb.quaternion.slerpQuaternions(anim.q0, anim.q1, k); CS.g.position.lerpVectors(anim.c0, CASE_AWAY, k); if (t >= 1) anim = null; }
+  }
+  // 2. käsi arvutis: sihi riivi / plaati / käepidet ja vajuta E (hoiab), uuesti E (lased lahti)
+  addEventListener('keydown', e => {
+    if (e.code !== 'KeyE' || e.repeat || renderer.xr.isPresenting) return;
+    if (deskPin) { const p = deskPin; deskPin = null; p.mod.up && p.mod.up(p.part, 'desk'); hint('🖐 Teine käsi lahti'); return; }
+    const H = hoverH && hoverH.object.userData.hit;
+    if (!H || !H.hold || G.phase !== 'play') { hint('Sihi hiirega riivi, plaati või käepidet ja vajuta E 🖐'); return; }
+    const m = H.mod; if (m.active ? !m.active() : G.cs !== 'out') return;
+    deskPin = { mod: m, part: H.part }; m.down && m.down(H.part, null, 'desk', hoverH); hint('🖐 Hoian teise käega – nüüd tegutse hiirega');
+  });
+
   function buildBomb() {
-    clearBomb(); HITS = [];
+    clearBomb(); HITS = []; buildCase();
     const L = 'ABCDEFGHKLMNPRSTUVZ', D = '0123456789';
     const X = G.diff === 'expert'; const B = { serial: pick(L) + pick(L) + pick(D) + '-' + pick(D) + pick(D) + pick(L), batteries: rint(5), indicator: pick(['MAA', 'VAL', 'TUL', 'KAS']), indLit: Math.random() < 0.5, ed: X ? 1 + rint(3) : 1 };
     G.B = B;
-    bomb = new THREE.Group(); bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); scene.add(bomb);
+    bomb = new THREE.Group(); bomb.position.set(CASE_HOME.x, CASE_HOME.y + 0.115, CASE_HOME.z + 0.01); bomb.rotation.set(-PI / 2, 0, 0); scene.add(bomb);
     const W = 0.46, H = 0.32, Dp = 0.14;
     const body = mesh(new THREE.BoxGeometry(W, H, Dp), caseMat, 0, 0, 0, bomb); body.userData.bombBody = true;
     for (const [w, h, x, y] of [[W + 0.004, 0.014, 0, H / 2 - 0.007], [W + 0.004, 0.014, 0, -H / 2 + 0.007], [0.014, H, W / 2 - 0.007, 0], [0.014, H, -W / 2 + 0.007, 0]]) { const L2 = Math.max(w, h); const tx = HAZ.clone(); tx.needsUpdate = true; tx.repeat.set(L2 / 0.03, 1); const s = mesh(new THREE.BoxGeometry(L2, 0.014, 0.004), new THREE.MeshStandardMaterial({ map: tx, roughness: 0.6 }), x, y, Dp / 2 + 0.001, bomb); if (h > w) s.rotation.z = PI / 2; }
-    for (const s of [-1, 1]) { const hd = mesh(new THREE.TorusGeometry(0.035, 0.007, 8, 16, PI), M('#1a1a1a', { metalness: 0.5 }), s * (W / 2 + 0.002), 0, 0, bomb); hd.rotation.set(0, s * PI / 2, PI / 2); }
+    for (const s of [-1, 1]) { const hg = new THREE.Group(); hg.position.set(s * (W / 2), 0, 0); bomb.add(hg); const rub = M('#15171a', { roughness: 0.8, metalness: 0.1 });
+      for (const y of [-0.035, 0.035]) mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.034, 10).rotateZ(PI / 2), rub, s * 0.017, y, 0, hg);
+      mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.09, 10), rub, s * 0.034, 0, 0, hg);
+      const hb = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.11, 0.1), invis()); hb.position.set(s * 0.03, 0, 0); hg.add(hb); hitH(hb, bombMod, s < 0 ? 'hL' : 'hR'); }
     // küljed
     canvasPlane(0.11, 0.04, 330, 120, (g, Wd, Hd) => { g.fillStyle = '#f2c230'; rr(g, 4, 4, Wd - 8, Hd - 8, 14); g.fill(); txt(g, 'JUHEND', Wd / 2, 38, 32, '#111'); txt(g, 'v' + B.ed, Wd / 2, 84, 48, '#111'); }, bomb, -0.15, H / 2 + 0.001, 0.04, false).rotation.x = -PI / 2;
     { const dyn = M('#b81e14', { roughness: 0.75, metalness: 0 }), cap = M('#e8dcc0', { roughness: 1, metalness: 0 }), tape = M('#111', { roughness: 0.4, metalness: 0 });
@@ -878,17 +985,46 @@ function startBomb(forced) {
   }
   let COVERS = [];
   function addCover(mm) {
-    const cg = new THREE.Group(); cg.position.z = 0.034; mm.g.add(cg); const c = { id: 'kaas', g: cg, left: 4, screws: [] };
-    const plate = mesh(new THREE.BoxGeometry(0.124, 0.124, 0.004), M('#6a7078', { metalness: 0.8, roughness: 0.35 }), 0, 0, 0, cg); hit(plate, c, 'plate');
-    canvasPlane(0.1, 0.05, 400, 200, (g, Wd, Hd) => { txt(g, '⚠ KAAS', Wd / 2, 60, 70, '#f2c230'); txt(g, 'keera 4 kruvi lahti', Wd / 2, 140, 40, '#ddd'); }, cg, 0, 0, 0.0025);
-    for (const [x, y] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const sg = new THREE.Group(); sg.position.set(x * 0.05, y * 0.05, 0.003); cg.add(sg); const head = mesh(new THREE.CylinderGeometry(0.0065, 0.0065, 0.004, 14).rotateX(PI / 2), screwM, 0, 0, 0, sg); mesh(new THREE.BoxGeometry(0.009, 0.0015, 0.0012), M('#222'), 0, 0, 0.0022, sg); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.01), new THREE.MeshBasicMaterial({ visible: false })); sg.add(hb); hit(hb, c, c.screws.length); c.screws.push({ sg, out: 0, done: false }); }
-    c.down = (part, tool) => { if (part === 'plate') { hint('Keera kruvikeerajaga 4 kruvi lahti! 🪛'); return; } const sc = c.screws[part]; if (!sc || sc.done) return; if (tool !== 'kruvi') { needTool('kruvi'); return; } sc.done = true; sc.out = 0.001; spinTool(); noise(0.5, 0.25, 1500); };
-    c.update = dt => { for (const sc of c.screws) if (sc.out > 0 && sc.sg.visible) { sc.out += dt; sc.sg.rotation.z += dt * 25; sc.sg.position.z = 0.003 + sc.out * 0.03; if (sc.out > 0.5) { sc.sg.visible = false; c.left--; tone(1800, 1200, 0.05, 'triangle', 0.08); if (c.left === 0) { c.fall = 0.001; noise(0.3, 0.4, 600); HITS = HITS.filter(h => h.userData.hit?.mod !== c); } } }
+    const cg = new THREE.Group(); cg.position.z = 0.034; mm.g.add(cg); const c = { id: 'kaas', g: cg, left: 4, screws: [], held: false, pry: null, prog: 0, slipT: 0 };
+    const plate = mesh(new THREE.BoxGeometry(0.124, 0.124, 0.004), M('#6a7078', { metalness: 0.8, roughness: 0.35 }), 0, 0, 0, cg); hitH(plate, c, 'plate');
+    canvasPlane(0.1, 0.05, 400, 200, (g, Wd, Hd) => { txt(g, '⚠ KAAS', Wd / 2, 52, 66, '#f2c230'); txt(g, '1) kruvid lahti 🪛', Wd / 2, 118, 34, '#ddd'); txt(g, '2) kangita lahti 🔧', Wd / 2, 160, 34, '#ddd'); }, cg, 0, 0, 0.0025);
+    for (const [x, y] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const sg = new THREE.Group(); sg.position.set(x * 0.05, y * 0.05, 0.003); cg.add(sg); mesh(new THREE.CylinderGeometry(0.0065, 0.0065, 0.004, 14).rotateX(PI / 2), screwM, 0, 0, 0, sg); mesh(new THREE.BoxGeometry(0.009, 0.0015, 0.0012), M('#222'), 0, 0, 0.0022, sg); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.01), new THREE.MeshBasicMaterial({ visible: false })); sg.add(hb); hit(hb, c, c.screws.length); c.screws.push({ sg, out: 0, done: false, p: 0, twist: null, tick: 0 }); }
+    // plaati hoitakse PALJA käega (2. käsi), kruvisid keeratakse kruvikeerajaga, lõpuks kangitsetakse plaat lahti
+    c.down = (part, tool, who) => {
+      if (part === 'plate') {
+        if (!tool) { c.held = true; sfx.click(); return; }
+        if (tool === 'kang') { if (c.left > 0) { hint('Kõigepealt keera 4 kruvi lahti 🪛'); return; } if (c.fall || c.gone) return; c.pry = { who, t: 0, p0: new THREE.Vector3().setFromMatrixPosition(who === 'desk' ? camera.matrixWorld : who.matrixWorld) }; return; }
+        hint(c.left > 0 ? 'Kruvid keera lahti KRUVIKEERAJAGA 🪛 (plaati hoia teise käega)' : 'Plaat on tihendiga kinni – kasuta KANGI 🔧'); return; }
+      const sc = c.screws[part]; if (!sc || sc.done) return;
+      if (tool !== 'kruvi') { needTool('kruvi'); return; }
+      sc.twist = { who, q: who === 'desk' ? null : who.getWorldQuaternion(new THREE.Quaternion()) };
+    };
+    c.up = part => { if (part === 'plate') { c.held = false; c.pry = null; } else { const sc = c.screws[part]; if (sc) sc.twist = null; } };
+    const _q = new THREE.Quaternion(), _f = new THREE.Vector3();
+    c.update = dt => {
+      for (const sc of c.screws) {
+        if (!sc.done && sc.twist) {
+          if (!c.held) { c.slipT -= dt; if (c.slipT <= 0) { c.slipT = 1.3; hint('Plaat liigub kaasa! Hoia seda TEISE käega 🖐'); tone(300, 180, 0.12, 'sawtooth', 0.05); } sc.p = Math.max(0, sc.p - dt * 0.4); if (sc.twist.q) sc.twist.who.getWorldQuaternion(sc.twist.q); }
+          else { const w = sc.twist.who; let d;
+            if (w === 'desk') { d = dt / 1.6; if (deskTool) deskTool.spin = 0.05; }
+            else { w.getWorldQuaternion(_q); const dq = _q.clone().multiply(sc.twist.q.clone().invert()); _f.set(0, 0, -1).applyQuaternion(_q); let ang = 2 * Math.atan2(dq.x * _f.x + dq.y * _f.y + dq.z * _f.z, dq.w); if (ang > PI) ang -= 2 * PI; if (ang < -PI) ang += 2 * PI; sc.twist.q.copy(_q); d = -ang / (2 * PI * 1.5); if (Math.abs(d) > 0.0015) haptic(w.userData.hand, 0.08, 15); } // vastupäeva = lahti
+            sc.p = clamp(sc.p + d, 0, 1); sc.tick += Math.abs(d); if (sc.tick > 0.07) { sc.tick = 0; tone(2400, 2000, 0.02, 'square', 0.025); } }
+          sc.sg.rotation.z = sc.p * 3 * PI; sc.sg.position.z = 0.003 + sc.p * 0.012;
+          if (sc.p >= 1) { sc.done = true; sc.out = 0.001; sc.twist = null; noise(0.5, 0.25, 1500); }
+        }
+        if (sc.out > 0 && sc.sg.visible) { sc.out += dt; sc.sg.rotation.z += dt * 25; sc.sg.position.z = 0.015 + sc.out * 0.03; if (sc.out > 0.5) { sc.sg.visible = false; c.left--; tone(1800, 1200, 0.05, 'triangle', 0.08); if (c.left === 0) hint('Plaat on tihendiga kinni – kangita see KANGIGA lahti 🔧'); } }
+      }
+      if (c.pry && c.left === 0 && !c.fall && !c.gone) { const pr = c.pry; let k;
+        if (pr.who === 'desk') { pr.t += dt / 1.1; k = pr.t; } else { const n = new THREE.Vector3(0, 0, 1).transformDirection(cg.matrixWorld); k = new THREE.Vector3().setFromMatrixPosition(pr.who.matrixWorld).sub(pr.p0).dot(n) / 0.05; }
+        k = clamp(k, 0, 1); if (k > c.prog) { if (Math.floor(k * 8) !== Math.floor(c.prog * 8)) noise(0.05, 0.3, 900); c.prog = k; }
+        if (c.prog >= 1) { c.pry = null; c.fall = 0.001; noise(0.35, 0.5, 600); tone(300, 120, 0.2, 'triangle', 0.1); HITS = HITS.filter(h => h.userData.hit?.mod !== c); } }
+      else if (!c.pry && c.prog > 0 && !c.fall && !c.gone) c.prog = Math.max(0, c.prog - dt * 1.2);
+      if (!c.fall && !c.gone) { cg.position.z = 0.034 + c.prog * 0.012 - (c.held ? 0.0015 : 0); cg.rotation.x = c.prog * 0.12; }
       if (c.fall > 0) { c.fall += dt; cg.position.set(0, -c.fall * c.fall * 1.2, 0.034 + c.fall * 0.25); cg.rotation.x = c.fall * 3; if (c.fall > 0.8) { cg.visible = false; c.fall = 0; c.gone = true; } } };
     COVERS.push(c);
   }
-  function clearBomb() { if (!bomb) return; scene.remove(bomb); bomb.traverse(o => { if (o.geometry) o.geometry.dispose(); }); bomb = null; HITS = []; }
-  function startGame() { initAudio(); for (const k in TL) if (TL[k].held) dropTool(TL[k]); buildBomb(); G.phase = 'play'; G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : G.diff === 'expert' ? 1 : 3; G.dark = 0; G.darkNext = rnd(25, 40); G.record = false; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
+  function clearBomb() { if (CS) { scene.remove(CS.g); CS.g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); CS = null; } anim = null; G.cs = 'none'; if (!bomb) return; scene.remove(bomb); bomb.traverse(o => { if (o.geometry) o.geometry.dispose(); }); bomb = null; HITS = []; }
+  function startGame() { initAudio(); for (const k in TL) if (TL[k].held) dropTool(TL[k]); deskPin = null; buildBomb(); G.phase = 'play'; hint('Kohver on lukus 🔒 – sea mõlemad koodid'); G.time = DIFF[G.diff].time; G.strikes = 0; G.maxS = G.diff === 'kid' ? 5 : G.diff === 'expert' ? 1 : 3; G.dark = 0; G.darkNext = rnd(25, 40); G.record = false; G.rate = 1; timerScr.redraw(G.time); strikeScr.redraw(0, G.maxS); placeMenu(); sendState(); }
   function strike(m) { if (G.phase !== 'play') return; G.strikes++; G.strikeAt = Date.now(); G.rate = G.diff === 'kid' ? 1 : 1 + 0.25 * G.strikes; sfx.strike(); haptic('left', 1, 300); haptic('right', 1, 300); strikeScr.redraw(G.strikes, G.maxS); if (m && m.led) { setLed(m, '#ff2010'); setTimeout(() => !m.solved && setLed(m, '#222'), 900); } flashT = 0.35; flashCol = '#ff2010'; if (G.strikes >= G.maxS) explode(); sendState(); }
   function solve(m) { m.solved = true; G.focus = -1; setLed(m, '#20ff60'); sfx.solve(); haptic('right', 0.5, 80); if (G.mods.every(x => x.solved)) win(); sendState(); }
   function win() { G.record = addTop(G.diff, G.time, G.strikes); G.phase = 'win'; G.endAt = Date.now(); timerScr.redraw(G.time, 'KAHJUTU'); sfx.win(); alarm.intensity = 0; flashT = 0.6; flashCol = '#20ff60'; menu.last = ''; setTimeout(() => G.phase === 'win' && placeMenu(), 2500); sendState(); }
@@ -901,6 +1037,7 @@ function startBomb(forced) {
     if (m.id === 'lab') Object.assign(o, { mi: m.mi, p: m.p, goal: m.goal });
     return o; }
   function sendState() { if (!net) return; const msg = { type: 'st', phase: G.phase, time: G.time, strikes: G.strikes, maxS: G.maxS, solved: G.mods.filter(m => m.solved).length, total: G.mods.length, diff: G.diff, endAt: G.endAt, strikeAt: G.strikeAt || 0 };
+    if (G.phase === 'play' && G.cs !== 'out' && G.codeL) msg.case = { cs: G.cs, L: G.codeL, R: G.codeR };
     if (G.diff === 'kid' && G.phase === 'play') { msg.kid = G.mods.map(kidInfo); msg.focus = G.focus ?? -1; } net.send(msg); }
 
   /* --- efektid --- */
@@ -931,27 +1068,48 @@ function startBomb(forced) {
   /* --- sisend --- */
   const ray = new THREE.Raycaster(); const ctrls = [];
   const ctrlRay = (c, o, d) => { _m.identity().extractRotation(c.matrixWorld); o.setFromMatrixPosition(c.matrixWorld); d.set(0, 0, -1).applyMatrix4(_m).normalize(); };
-  function pickAt(o, d) { ray.set(o, d); ray.far = 3; const objs = [...UI, ...HITS, ...TOOLHITS.filter(h => h.visible)]; if (bomb) objs.push(bomb.children[0]); const h = ray.intersectObjects(objs, false)[0]; return h || null; }
-  function press(h, who) { if (!h) return null; if (h.object.userData.panel) { h.object.userData.panel.click(h.uv); return null; } if (h.object.userData.tool) { grabTool(h.object.userData.tool, who); return null; } const H = h.object.userData.hit; if (!H || G.phase !== 'play') return null; lastWho = who; H.mod.down && H.mod.down(H.part, toolOf(who)); return H; }
+  function pickAt(o, d) { ray.set(o, d); ray.far = 3; const out = G.cs === 'out'; const objs = [...UI, ...HITS.filter(x => { const m = x.userData.hit.mod; return m.active ? m.active() : out; }), ...TOOLHITS.filter(h => h.visible)]; if (bomb && out) objs.push(bomb.children[0]); const h = ray.intersectObjects(objs, false)[0]; return h || null; }
+  function press(h, who) { if (!h) return null; const u = h.object.userData;
+    if (u.panel) { u.panel.click(h.uv); return null; }
+    if (u.tcase) { const t = who === 'desk' ? deskTool : who.userData.tool; if (t) dropTool(t); return null; } // tööriist tagasi kohvrisse
+    if (u.tool) { grabTool(u.tool, who); return null; }
+    if (u.bombBody) { if (G.cs === 'out' && who !== 'desk' && who.userData.src && who.userData.src.hand && bomb) { who.userData.grab = new THREE.Matrix4().copy(who.matrixWorld).invert().multiply(bomb.matrixWorld); who.userData.handGrab = true; } return null; } // käte jälgimine: näpistus haarab pommi
+    const H = u.hit; if (!H || G.phase !== 'play') return null; const m = H.mod; if (m.active ? !m.active() : G.cs !== 'out') return null;
+    const tool = toolOf(who); if (tool && tool !== 'lamp' && who !== 'desk' && h.distance > 0.35) { hint('Vii tööriist lähemale 🤏 (umbes 20 cm)'); return null; }
+    lastWho = who; m.down && m.down(H.part, tool, who, h); return H; }
   function release(H) { if (H && H.mod.up) H.mod.up(H.part); }
   /* --- tööriistad --- */
   const TL = {}, TOOLHITS = []; let deskTool = null; const deskHand = new THREE.Group(); camera.add(deskHand); deskHand.position.set(0.17, -0.15, -0.34);
-  const TNAME = { tangid: '✂️ Tangid', kruvi: '🪛 Kruvikeeraja', lamp: '🔦 Taskulamp' };
+  const TNAME = { tangid: '✂️ Tangid', kruvi: '🪛 Kruvikeeraja', kang: '🔧 Kang', lamp: '🔦 Taskulamp' };
+  const TC = new THREE.Vector3(0.62, 0.825, -0.4); // mängija tööriistakohver
   (() => { const steel = M('#b8bec6', { metalness: 0.9, roughness: 0.3 }); let g;
+    { const tc = new THREE.Group(); tc.position.copy(TC); scene.add(tc);
+      const tw = 0.5, td = 0.38, th = 0.075, tt = 0.012; const red = M('#a8321f', { roughness: 0.5, metalness: 0.1 }), foamM = M('#202327', { roughness: 1, metalness: 0 });
+      mesh(new THREE.BoxGeometry(tw, 0.012, td), red, 0, 0.006, 0, tc);
+      mesh(new THREE.BoxGeometry(tw, th, tt), red, 0, th / 2, td / 2 - tt / 2, tc); mesh(new THREE.BoxGeometry(tw, th, tt), red, 0, th / 2, -td / 2 + tt / 2, tc);
+      mesh(new THREE.BoxGeometry(tt, th, td), red, tw / 2 - tt / 2, th / 2, 0, tc); mesh(new THREE.BoxGeometry(tt, th, td), red, -tw / 2 + tt / 2, th / 2, 0, tc);
+      const foam = mesh(new THREE.BoxGeometry(tw - 0.03, 0.05, td - 0.03), foamM, 0, 0.037, 0, tc); foam.userData.tcase = true; TOOLHITS.push(foam);
+      for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(0.056, 0.003, 0.22), M('#08090b', { roughness: 1, metalness: 0 }), -0.15 + i * 0.1, 0.0635, -0.01, tc).castShadow = false;
+      const lidT = new THREE.Group(); lidT.position.set(0, th, -td / 2); lidT.rotation.x = -1.95; tc.add(lidT);
+      mesh(new THREE.BoxGeometry(tw + 0.008, 0.045, td + 0.008), red, 0, 0.0225, td / 2, lidT); mesh(new THREE.BoxGeometry(tw - 0.03, 0.004, td - 0.03), foamM, 0, -0.001, td / 2, lidT);
+      const lb = canvasPlane(0.34, 0.07, 680, 140, (gg, Wd, Hd) => txt(gg, '🧰 TÖÖRIISTAD', Wd / 2, Hd / 2 + 4, 76, '#f2c230'), lidT, 0, -0.0035, td / 2); lb.rotation.x = PI / 2;
+      for (const x of [-0.12, 0.12]) mesh(new THREE.BoxGeometry(0.04, 0.02, 0.008), steel, x, th - 0.02, td / 2 + 0.004, tc); }
     g = new THREE.Group(); const jaws = []; for (const s of [1, -1]) { const j = new THREE.Group(); g.add(j); mesh(new THREE.BoxGeometry(0.012, 0.008, 0.1), M('#c8281e', { roughness: 0.7, metalness: 0 }), s * 0.012, 0, 0.055, j).rotation.y = s * 0.12; mesh(new THREE.BoxGeometry(0.007, 0.006, 0.045), steel, s * 0.0035, 0, -0.022, j); jaws.push(j); } mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.012, 12), steel, 0, 0, 0, g);
-    TL.tangid = { id: 'tangid', g, jaws, home: new THREE.Vector3(0.43, 0.835, -0.3), ry: 0.5 };
+    TL.tangid = { id: 'tangid', g, jaws, home: new THREE.Vector3(TC.x - 0.15, 0.897, TC.z - 0.04), ry: 0 };
     g = new THREE.Group(); mesh(new THREE.CylinderGeometry(0.014, 0.012, 0.09, 10).rotateX(PI / 2), M('#f2c230', { roughness: 0.5, metalness: 0 }), 0, 0, 0.045, g); mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.1, 8).rotateX(PI / 2), steel, 0, 0, -0.05, g); mesh(new THREE.BoxGeometry(0.007, 0.0015, 0.01), steel, 0, 0, -0.1, g);
-    TL.kruvi = { id: 'kruvi', g, home: new THREE.Vector3(0.52, 0.838, -0.45), ry: -0.25 };
+    TL.kruvi = { id: 'kruvi', g, home: new THREE.Vector3(TC.x - 0.05, 0.897, TC.z - 0.02), ry: 0 };
     g = new THREE.Group(); mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.12, 12).rotateX(PI / 2), M('#222'), 0, 0, 0.03, g); mesh(new THREE.CylinderGeometry(0.022, 0.016, 0.03, 12).rotateX(PI / 2), M('#555', { metalness: 0.7 }), 0, 0, -0.04, g); const lens = mesh(new THREE.CircleGeometry(0.02, 16), new THREE.MeshBasicMaterial({ color: '#fffbe0' }), 0, 0, -0.0555, g); lens.rotation.y = PI;
-    TL.lamp = { id: 'lamp', g, home: new THREE.Vector3(0.43, 0.842, -0.6), ry: 0.9 };
+    TL.lamp = { id: 'lamp', g, home: new THREE.Vector3(TC.x + 0.15, 0.903, TC.z), ry: 0 };
+    g = new THREE.Group(); mesh(new THREE.BoxGeometry(0.02, 0.012, 0.075), M('#1e5fb0', { roughness: 0.6, metalness: 0 }), 0, 0, 0.06, g); mesh(new THREE.BoxGeometry(0.016, 0.003, 0.11), steel, 0, 0, -0.03, g); const kt = mesh(new THREE.BoxGeometry(0.016, 0.002, 0.025), steel, 0, 0.004, -0.092, g); kt.rotation.x = 0.5;
+    TL.kang = { id: 'kang', g, home: new THREE.Vector3(TC.x + 0.05, 0.897, TC.z - 0.02), ry: 0 };
     for (const k in TL) { const t = TL[k]; scene.add(t.g); const hb = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.2), new THREE.MeshBasicMaterial({ visible: false })); hb.userData.tool = t; t.g.add(hb); t.hb = hb; TOOLHITS.push(hb); homeTool(t);
-      const lb = canvasPlane(0.1, 0.025, 400, 100, (gg, Wd, Hd) => txt(gg, { tangid: 'TANGID', kruvi: 'KRUVIKEERAJA', lamp: 'TASKULAMP' }[k], Wd / 2, Hd / 2, 60, '#f2c230'), scene, t.home.x, 0.826, t.home.z + 0.09, false); lb.rotation.x = -PI / 2; } })();
-  function homeTool(t) { t.held = null; scene.add(t.g); t.g.position.copy(t.home); t.g.rotation.set(0, t.ry, 0); t.hb.visible = true; }
+      const lb = canvasPlane(0.1, 0.025, 400, 100, (gg, Wd, Hd) => fit(gg, { tangid: 'TANGID', kruvi: 'KRUVIKEERAJA', kang: 'KANG', lamp: 'TASKULAMP' }[k], Wd / 2, Hd / 2, 60, '#f2c230', Wd - 20), scene, t.home.x, 0.8885, TC.z + 0.15, false); lb.rotation.x = -PI / 2; } })();
+  function homeTool(t) { t.held = null; t.open = false; scene.add(t.g); t.g.position.copy(t.home); t.g.rotation.set(0, t.ry, 0); t.hb.visible = true; }
   function grabTool(t, who) { if (t.held) dropTool(t); if (who === 'desk') { if (deskTool) dropTool(deskTool); deskTool = t; deskHand.add(t.g); t.g.position.set(0, 0, 0); t.g.rotation.set(0.3, 0.35, 0); }
     else { if (who.userData.tool) dropTool(who.userData.tool); who.userData.tool = t; who.add(t.g); t.g.position.set(0, -0.01, -0.03); t.g.rotation.set(0, 0, 0); haptic(who.userData.hand, 0.4, 40); }
     t.held = who; sfx.click(); tone(500, 700, 0.08, 'triangle', 0.08); updToolHud(); }
   function dropTool(t) { if (!t) return; if (t.held === 'desk') deskTool = null; else if (t.held && t.held.userData) t.held.userData.tool = null; homeTool(t); updToolHud(); }
-  function updToolHud() { $('toolHud').innerHTML = `Käes: <b>${deskTool ? TNAME[deskTool.id] : '✋ käsi'}</b> &nbsp;·&nbsp; <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp`; }
+  function updToolHud() { $('toolHud').innerHTML = `Käes: <b>${deskTool ? TNAME[deskTool.id] : '✋ käsi'}</b> &nbsp;·&nbsp; <b style="color:#f2c230">1</b> käsi · <b style="color:#f2c230">2</b> tangid · <b style="color:#f2c230">3</b> kruvikeeraja · <b style="color:#f2c230">4</b> taskulamp · <b style="color:#f2c230">5</b> kang · <b style="color:#f2c230">E</b> teine käsi`; }
   const toolOf = who => who === 'desk' ? (deskTool ? deskTool.id : null) : (who && who.userData && who.userData.tool ? who.userData.tool.id : null);
   let lastWho = null;
   function snapTool() { const t = lastWho === 'desk' ? deskTool : lastWho?.userData?.tool; if (t && t.jaws) { t.snap = 0.25; } }
@@ -959,24 +1117,31 @@ function startBomb(forced) {
   function needTool(id) { hint(id === 'tangid' ? 'Juhtme lõikamiseks on vaja TANGE ✂️' : 'Selleks on vaja KRUVIKEERAJAT 🪛'); tone(220, 160, 0.2, 'sawtooth', 0.06); }
   const hintC = cnv(1024, 160); const hintS = new THREE.Sprite(new THREE.SpriteMaterial({ map: ctex(hintC), transparent: true, depthTest: false })); hintS.scale.set(0.5, 0.078, 1); hintS.renderOrder = 60; hintS.visible = false; scene.add(hintS); let hintT = 0;
   function hint(text) { const g = hintC.getContext('2d'); g.clearRect(0, 0, 1024, 160); rr(g, 6, 6, 1012, 148, 40); g.fillStyle = 'rgba(20,22,26,.92)'; g.fill(); g.lineWidth = 8; g.strokeStyle = '#f2c230'; g.stroke(); fit(g, text, 512, 82, 64, '#fff', 960); hintS.material.map.needsUpdate = true; hintS.visible = true; hintT = 2.5; }
-  function updateTools(dt) {
+  const wireNear = h => !!(h && h.object.userData.hit && ['juhtmed', 'jada'].includes(h.object.userData.hit.mod.id) && h.distance < 0.45);
+  function updateTools(dt) { if (deskTool && deskTool.id === 'tangid') deskTool.open = wireNear(hoverH);
     for (const k in TL) { const t = TL[k]; t.hb.visible = !t.held;
-      if (t.jaws) { const a = t.snap > 0 ? 0 : 0.18; if (t.snap > 0) t.snap -= dt; t.jaws[0].rotation.y += (a - t.jaws[0].rotation.y) * Math.min(1, dt * 20); t.jaws[1].rotation.y = -t.jaws[0].rotation.y; }
+      if (t.jaws) { const a = t.snap > 0 ? 0 : t.open ? 0.34 : 0.18; if (t.snap > 0) t.snap -= dt; t.jaws[0].rotation.y += (a - t.jaws[0].rotation.y) * Math.min(1, dt * 20); t.jaws[1].rotation.y = -t.jaws[0].rotation.y; }
       if (t.spin > 0) { t.spin -= dt; t.g.rotation.z += dt * 25; } else if (t.held) t.g.rotation.z *= 0.8; }
     if (hintT > 0) { hintT -= dt; hintS.visible = hintT > 0; const bp = bomb ? bomb.position : BOMB_HOME; hintS.position.set(bp.x, bp.y + 0.3, bp.z); hintS.material.opacity = Math.min(1, hintT * 2); }
     for (const c of COVERS) c.update(dt);
   }
-  addEventListener('keydown', e => { const k = { Digit1: null, Digit2: 'tangid', Digit3: 'kruvi', Digit4: 'lamp' }; if (!(e.code in k)) return; if (k[e.code]) grabTool(TL[k[e.code]], 'desk'); else if (deskTool) dropTool(deskTool); });
+  addEventListener('keydown', e => { const k = { Digit1: null, Digit2: 'tangid', Digit3: 'kruvi', Digit4: 'lamp', Digit5: 'kang' }; if (!(e.code in k)) return; if (k[e.code]) grabTool(TL[k[e.code]], 'desk'); else if (deskTool) dropTool(deskTool); });
   // VR
-  const cmf = new XRControllerModelFactory();
+  const cmf = new XRControllerModelFactory(), hmf = new XRHandModelFactory(); // käte jälgimine on VALIKULINE – kõik töötab ka kontrolleritega
   for (let i = 0; i < 2; i++) {
+    const hand = renderer.xr.getHand(i); hand.add(hmf.createHandModel(hand, 'mesh')); rig.add(hand);
     const c = renderer.xr.getController(i); c.userData = {}; const gr = renderer.xr.getControllerGrip(i); gr.add(cmf.createControllerModel(gr)); rig.add(c, gr); ctrls.push(c);
     c.addEventListener('connected', e => { c.userData.hand = e.data.handedness; c.userData.src = e.data; });
     c.addEventListener('selectstart', () => { initAudio(); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); c.userData.act = press(pickAt(o, d), c); if (c.userData.act) haptic(c.userData.hand, 0.3, 30); });
-    c.addEventListener('selectend', () => { release(c.userData.act); c.userData.act = null; });
-    c.addEventListener('squeezestart', () => { if (c.userData.tool) { dropTool(c.userData.tool); return; } { const cp0 = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o0 = new THREE.Vector3(), d0 = new THREE.Vector3(); ctrlRay(c, o0, d0); const h0 = pickAt(o0, d0); let t = h0 && h0.object.userData.tool; if (!t) for (const k in TL) if (!TL[k].held && TL[k].g.position.distanceTo(cp0) < 0.14) t = TL[k]; if (t) { grabTool(t, c); return; } }
-      if (!bomb) return; const cp = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); if (cp.distanceTo(bomb.position) < 0.4 || (h && !h.object.userData.panel)) { c.userData.grab = new THREE.Matrix4().copy(c.matrixWorld).invert().multiply(bomb.matrixWorld); haptic(c.userData.hand, 0.4, 50); } });
-    c.addEventListener('squeezeend', () => { c.userData.grab = null; });
+    c.addEventListener('selectend', () => { release(c.userData.act); c.userData.act = null; if (c.userData.handGrab) { c.userData.handGrab = false; c.userData.grab = null; } });
+    c.addEventListener('squeezestart', () => { if (c.userData.tool) { dropTool(c.userData.tool); return; }
+      const cp = new THREE.Vector3().setFromMatrixPosition(c.matrixWorld); const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d);
+      let t = h && h.object.userData.tool; if (!t) for (const k in TL) if (!TL[k].held && TL[k].g.position.distanceTo(cp) < 0.14) t = TL[k]; if (t) { grabTool(t, c); return; }
+      if (!bomb || G.phase !== 'play') return;
+      if (G.cs === 'open') { for (const [part, sx] of [['hL', -1], ['hR', 1]]) { const wp = new THREE.Vector3(sx * 0.265, 0, 0).applyMatrix4(bomb.matrixWorld); if (cp.distanceTo(wp) < 0.18) { c.userData.hpart = part; bombMod.down(part); return; } } hint('Haara pommi külgedelt käepidemetest – MÕLEMA käega 🙌'); return; }
+      if (G.cs !== 'out') return;
+      if (cp.distanceTo(bomb.position) < 0.4 || (h && !h.object.userData.panel)) { c.userData.grab = new THREE.Matrix4().copy(c.matrixWorld).invert().multiply(bomb.matrixWorld); haptic(c.userData.hand, 0.4, 50); } });
+    c.addEventListener('squeezeend', () => { c.userData.grab = null; if (c.userData.hpart) { bombMod.up(c.userData.hpart); c.userData.hpart = null; } });
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, -1)]), new THREE.LineBasicMaterial({ color: '#f2c230', transparent: true, opacity: 0.7 })); c.add(line); c.userData.line = line;
     const dot = new THREE.Mesh(new THREE.SphereGeometry(0.004, 8, 6), new THREE.MeshBasicMaterial({ color: '#fff', depthTest: false })); dot.renderOrder = 50; scene.add(dot); c.userData.dot = dot;
   }
@@ -986,20 +1151,20 @@ function startBomb(forced) {
   const mouseRay = e => { mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera); return [ray.ray.origin.clone(), ray.ray.direction.clone()]; };
   cvs.addEventListener('mousedown', e => { initAudio(); if (e.button === 2) { rdrag = { x: e.clientX, y: e.clientY }; return; } if (e.button !== 0) return; const [o, d] = mouseRay(e); mAct = press(pickAt(o, d), 'desk'); });
   addEventListener('mouseup', e => { if (e.button === 2) rdrag = null; if (e.button === 0) { release(mAct); mAct = null; } });
-  addEventListener('mousemove', e => { { const [o0, d0] = mouseRay(e); mouseTarget.copy(o0).addScaledVector(d0, 1); } if (rdrag && bomb) { const dx = e.clientX - rdrag.x, dy = e.clientY - rdrag.y; rdrag = { x: e.clientX, y: e.clientY }; bomb.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), dx * 0.008); const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); bomb.rotateOnWorldAxis(right, dy * 0.008); } const [o, d] = mouseRay(e); hoverH = pickAt(o, d); });
+  addEventListener('mousemove', e => { { const [o0, d0] = mouseRay(e); mouseTarget.copy(o0).addScaledVector(d0, 1); } if (rdrag && bomb && G.cs === 'out') { const dx = e.clientX - rdrag.x, dy = e.clientY - rdrag.y; rdrag = { x: e.clientX, y: e.clientY }; bomb.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), dx * 0.008); const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); bomb.rotateOnWorldAxis(right, dy * 0.008); } const [o, d] = mouseRay(e); hoverH = pickAt(o, d); });
   addEventListener('wheel', e => { if (renderer.xr.isPresenting) return; camera.fov = clamp(camera.fov + e.deltaY * 0.03, 22, 70); camera.updateProjectionMatrix(); });
-  addEventListener('keydown', e => { if (e.code === 'Space' && bomb) { bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); } if (e.code === 'KeyF' && bomb) bomb.rotateY(PI); });
+  addEventListener('keydown', e => { if (e.code === 'Space' && bomb && G.cs === 'out') { bomb.position.copy(BOMB_HOME); bomb.rotation.set(-0.55, 0, 0); } if (e.code === 'KeyF' && bomb && G.cs === 'out') bomb.rotateY(PI); });
   let hoverH = null;
   function updatePointers() {
     for (const P of PANELS) P.hoverNext = -1;
-    if (renderer.xr.isPresenting) for (const c of ctrls) { if (!c.userData.src) continue; const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); c.userData.line.scale.z = h ? h.distance : 0.6; c.userData.dot.visible = !!h; if (h) { c.userData.dot.position.copy(h.point); if (h.object.userData.panel) h.object.userData.panel.hoverNext = h.object.userData.panel.indexAt(h.uv); }
+    if (renderer.xr.isPresenting) for (const c of ctrls) { if (!c.userData.src) continue; const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); c.userData.line.scale.z = h ? h.distance : 0.6; if (c.userData.tool && c.userData.tool.id === 'tangid') c.userData.tool.open = wireNear(h); c.userData.dot.visible = !!h; if (h) { c.userData.dot.position.copy(h.point); if (h.object.userData.panel) h.object.userData.panel.hoverNext = h.object.userData.panel.indexAt(h.uv); }
       if (c.userData.grab && bomb) { _m.multiplyMatrices(c.matrixWorld, c.userData.grab); _m.decompose(bomb.position, bomb.quaternion, _s); } }
     else if (hoverH && hoverH.object.userData.panel) hoverH.object.userData.panel.hoverNext = hoverH.object.userData.panel.indexAt(hoverH.uv);
     { let fm = null; if (renderer.xr.isPresenting) { for (const c of ctrls) { if (!c.userData.src) continue; const o = new THREE.Vector3(), d = new THREE.Vector3(); ctrlRay(c, o, d); const h = pickAt(o, d); if (h && h.object.userData.hit) { fm = h.object.userData.hit.mod; break; } } } else if (hoverH && hoverH.object.userData.hit) fm = hoverH.object.userData.hit.mod; if (fm) G.focus = G.mods.indexOf(fm); }
     cvs.style.cursor = hoverH && (hoverH.object.userData.panel || hoverH.object.userData.hit) ? 'pointer' : 'default';
     for (const P of PANELS) if (P.hoverNext !== P.hover) { P.hover = P.hoverNext; P.refresh(); }
   }
-  function deskCam() { camera.position.set(0, 1.4, 0.02); camera.fov = 50; camera.updateProjectionMatrix(); if (G.phase === 'play') camera.lookAt(0, 1.0, -0.5); else camera.lookAt(0, 1.24, -1.0); }
+  function deskCam() { camera.position.set(0, 1.4, 0.02); camera.fov = G.phase === 'play' ? 62 : 50; camera.updateProjectionMatrix(); if (G.phase === 'play') camera.lookAt(0, 1.0, -0.5); else camera.lookAt(0, 1.24, -1.0); }
   deskCam();
   document.body.appendChild(VRButton.createButton(renderer, { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking'] }));
   renderer.xr.addEventListener('sessionstart', () => { initAudio(); camera.position.set(0, 0, 0); camera.rotation.set(0, 0, 0); $('bombHud').classList.add('hide'); });
@@ -1010,21 +1175,20 @@ function startBomb(forced) {
   function step(dt) {
     G.clock += dt;
     updateTools(dt);
-    if (G.phase === 'play') { G.time -= dt * G.rate; const s = Math.floor(G.time); if (s !== lastSec) { lastSec = s; timerScr.redraw(G.time); if (G.time < 20) heart(); }
+    if (G.phase === 'play' && G.cs !== 'locked' && G.cs !== 'none') { G.time -= dt * G.rate; const s = Math.floor(G.time); if (s !== lastSec) { lastSec = s; timerScr.redraw(G.time); if (G.time < 20) heart(); }
       const tr = G.time > 60 ? 1 : G.time > 30 ? 2 : G.time > 10 ? 4 : 8; G.tickAcc = (G.tickAcc || 0) + dt; if (G.tickAcc >= 1 / tr) { G.tickAcc = 0; sfx.tick(G.time < 30); if (G.time < 10) tone(2200, 2200, 0.04, 'square', 0.04); if (G.bombLed) { G.bombLed.material.emissiveIntensity = 4; G.ledT = 0.06; } }
       if (G.ledT > 0) { G.ledT -= dt; if (G.ledT <= 0 && G.bombLed) G.bombLed.material.emissiveIntensity = 0; }
       updDrone(); if (!renderer.xr.isPresenting && G.time < 10) camera.position.x = (Math.random() - 0.5) * 0.004 * (10 - G.time) / 10;
       for (const m of G.mods) m.update && m.update(dt); if (G.time <= 0) { G.time = 0; timerScr.redraw(0); explode(); } }
     else stopDrone();
-    updatePointers(); updateFX(dt);
+    updateCase(dt); updatePointers(); updateFX(dt);
     sendT += dt; if (sendT > (G.diff === 'kid' ? 0.15 : 0.3)) { sendT = 0; sendState(); }
-    menuT += dt; if (menuT > 0.5) { menuT = 0; const on = manualOn(); if (on && !G.wasOn) { sfx.solve(); G.solo = false; } G.wasOn = on; const sig = [G.phase, on, netStatus, code, G.strikes, G.mods.filter(m => m.solved).length, G.diff, G.solo, G.phase === 'lobby' && !on ? Math.floor(G.clock * 2) : 0].join('|'); if (sig !== menu.last) { menu.last = sig; menu.refresh(); } $('hudNet').textContent = manualOn() ? 'Juhendaja on ühendatud ✓' : netStatus === 'nopeer' ? 'Võrguteek ei laadinud – testi sama arvuti teise vahelehega' : 'Ootan juhendajat…'; }
+    menuT += dt; if (menuT > 0.5) { menuT = 0; const on = manualOn(); if (on && !G.wasOn) { sfx.solve(); G.solo = false; } G.wasOn = on; const sig = [G.phase, on, netStatus, code, G.strikes, G.mods.filter(m => m.solved).length, G.diff, G.solo, G.cs, G.phase === 'lobby' && !on ? Math.floor(G.clock * 2) : 0].join('|'); if (sig !== menu.last) { menu.last = sig; menu.refresh(); } $('hudNet').textContent = manualOn() ? 'Juhendaja on ühendatud ✓' : netStatus === 'nopeer' ? 'Võrguteek ei laadinud – testi sama arvuti teise vahelehega' : 'Ootan juhendajat…'; }
   }
   renderer.setAnimationLoop(() => { const dt = Math.min(clock.getDelta(), 0.05); step(dt); renderer.render(scene, camera); });
   connect();
-  window.GAME = { G, get covers() { return COVERS; }, TL, grabTool, get bomb() { return bomb; }, get code() { return code; }, startGame, step, press: (mod, part, tool = 'tangid') => mod.down && mod.down(part, tool), up: (mod, part) => mod.up && mod.up(part), sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); } };
+  window.GAME = { get CS() { return CS; }, caseMod, bombMod, liftOut, openCase, G, get covers() { return COVERS; }, TL, grabTool, get bomb() { return bomb; }, get code() { return code; }, startGame, step, press: (mod, part, tool = 'tangid') => mod.down && mod.down(part, tool), up: (mod, part) => mod.up && mod.up(part), sim: s => { for (let t = 0; t < s; t += 0.05) step(0.05); } };
 }
 </script>
 </body>
 </html>
-[index (61).html](https://github.com/user-attachments/files/34201827/index.61.html)
